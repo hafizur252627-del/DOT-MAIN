@@ -402,7 +402,7 @@
     <div class="top-bar">
       <div>
         <h1 class="title">ডট গেম (Dots &amp; Boxes)</h1>
-        <div class="sub">আপনি: <span class="purple">বেগুনী</span> • কম্পিউটার: <span class="yellow">হলুদ</span></div>
+        <div class="sub">প্লেয়ার: <span class="purple">বেগুনী</span> • কম্পিউটার: <span class="yellow">হলুদ</span></div>
       </div>
       <div style="display:flex;gap:8px;">
         <button id="themeBtn" type="button" class="btn" onclick="toggleTheme()">☀️ Day</button>
@@ -412,12 +412,12 @@
 
     <!-- LOBBY -->
     <div id="lobbyView" class="card">
-      <label for="nameInput">আপনার নাম</label>
+      <label for="nameInput">প্লেয়ারের নাম</label>
       <input id="nameInput" type="text" maxlength="16" placeholder="যেমন: লাবিব" />
 
       <div class="tabs">
         <button id="tCreate" type="button" class="tab-btn active" onclick="setTab('create')">➕ রুম তৈরি</button>
-        <button id="tJoin" type="button" class="tab-btn" onclick="setTab('join')">🔗 রুম যোগদান</button>
+        <button id="tJoin" type="button" class="tab-btn" onclick="setTab('join')">🔗 রুমে যোগদান</button>
         <button id="tAi" type="button" class="tab-btn" onclick="setTab('ai')">🤖 কম্পিউটার</button>
       </div>
 
@@ -507,13 +507,13 @@
       <div id="resultText" class="result-box"></div>
 
       <div class="footer-btns">
-        <button type="button" class="btn" onclick="backLobby()">← লবি</button>
+        <button type="button" class="btn" onclick="backLobby()">← মেনু</button>
         <button type="button" class="btn" onclick="restartMatch()">🔄 আবার খেলুন</button>
       </div>
     </div>
   </div>
 
-  <footer class="made-by">MADE BY LABIB</footer>
+  <footer class="made-by">MADE BY LABIB AL AHSAN</footer>
 
   <div id="toast" class="toast">কপি করা হয়েছে!</div>
 
@@ -563,7 +563,7 @@
     let boxes = {};
     let turn = 1;
     let scores = { 1: 0, 2: 0 };
-    let p1Name = 'আপনি';
+    let p1Name = 'প্লেয়ার';
     let p2Name = 'কম্পিউটার';
     let gameEnded = false;
     let metrics = { pad: 34, cell: 56 };
@@ -761,7 +761,7 @@
       mode = 'ai';
       myRole = 1;
       roomId = null;
-      p1Name = getName('আপনি');
+      p1Name = getName('প্লেয়ার');
       p2Name = aiLevel === 'hard' ? 'কম্পিউটার (কঠিন)' : aiLevel === 'medium' ? 'কম্পিউটার (মাঝারি)' : 'কম্পিউটার (সহজ)';
       resetState(rows, cols);
       openGameView();

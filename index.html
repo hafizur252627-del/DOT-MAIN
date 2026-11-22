@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ডট গেম (Dots & Boxes)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Hind Siliguri', 'Segoe UI', Arial, sans-serif;
+      background: #090d16;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      user-select: none;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    body.day {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .wrap {
+      width: 100%;
+      max-width: 520px;
+      margin: auto 0;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0;
+    }
+    .sub {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+    body.day .sub {
+      color: #475569;
+    }
+    .purple { color: #a855f7; font-weight: 700; }
+    .yellow { color: #eab308; font-weight: 700; }
+
+    .btn {
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: #f8fafc;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn:hover { opacity: 0.92; }
+    body.day .btn {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+    body.day .card {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #cbd5e1;
+    }
+    body.day label { color: #334155; }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #374151;
+      background: #0b1120;
+      color: #ffffff;
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+    body.day input[type="text"],
+    body.day input[type="number"] {
+      background: #f8fafc;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      background: #0b1120;
+      padding: 5px;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      margin-bottom: 16px;
+    }
+    body.day .tabs {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+    }
+    .tab-btn {
+      border: 0;
+      background: transparent;
+      color: #94a3b8;
+      padding: 8px 6px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    body.day .tab-btn { color: #475569; }
+    .tab-btn.active {
+      background: #a855f7;
+      color: #ffffff;
+    }
+
+    .grid-box {
+      background: #0b1120;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+    body.day .grid-box {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    .presets {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .preset-btn {
+      padding: 6px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: #f8fafc;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    body.day .preset-btn {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+
+    .slider-row {
+      margin-top: 8px;
+    }
+    .slider-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    body.day .slider-top { color: #475569; }
+    input[type="range"] {
+      width: 100%;
+      accent-color: #a855f7;
+      cursor: pointer;
+    }
+
+    .timer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #0b1120;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+    }
+    body.day .timer-row {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    .timer-row input[type="number"] {
+      width: 90px;
+      margin-bottom: 0;
+      padding: 7px 10px;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+      background: linear-gradient(90deg, #a855f7, #7c3aed);
+      cursor: pointer;
+    }
+    .primary-btn.ai-btn {
+      background: linear-gradient(90deg, #a855f7, #eab308);
+      color: #090d16;
+    }
+    .primary-btn.join-btn {
+      background: linear-gradient(90deg, #10b981, #0d9488);
+    }
+
+    .ai-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .ai-lvl {
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #0b1120;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    body.day .ai-lvl {
+      background: #f8fafc;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+    .ai-lvl.active {
+      border-color: #eab308;
+      background: rgba(234, 179, 8, 0.2);
+      color: #eab308;
+    }
+
+    .err-msg {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      color: #fda4af;
+      font-size: 12px;
+      text-align: center;
+      display: none;
+    }
+    body.day .err-msg { color: #be123c; }
+
+    #gameView { display: none; }
+
+    .room-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .scores {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .p-card {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+    }
+    .p-card.p1.active { border-color: #a855f7; }
+    .p-card.p2.active { border-color: #eab308; }
+    .p-card.p2 { text-align: right; }
+    .p-score {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-top: 4px;
+    }
+    .p1 .p-score { color: #a855f7; }
+    .p2 .p-score { color: #eab308; }
+
+    .turn-pill {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(168, 85, 247, 0.18);
+      color: #d8b4fe;
+      text-align: center;
+    }
+    body.day .turn-pill { color: #6b21a8; }
+
+    .clock-pill {
+      margin-top: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(234, 179, 8, 0.18);
+      color: #fde047;
+      text-align: center;
+    }
+    body.day .clock-pill {
+      background: rgba(234, 179, 8, 0.25);
+      color: #854d0e;
+    }
+    .clock-pill.danger {
+      background: rgba(244, 63, 94, 0.25);
+      color: #fda4af;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .footer-btns {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .result-box {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 800;
+      min-height: 22px;
+      color: #eab308;
+    }
+
+    .made-by {
+      width: 100%;
+      text-align: center;
+      padding: 14px 8px 4px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #94a3b8;
+    }
+    body.day .made-by {
+      color: #475569;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 38px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      color: #ffffff;
+      border: 1px solid #475569;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-bar">
+      <div>
+        <h1 class="title">ডট গেম (Dots &amp; Boxes)</h1>
+        <div class="sub">আপনি: <span class="purple">বেগুনী</span> • কম্পিউটার: <span class="yellow">হলুদ</span></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button id="themeBtn" type="button" class="btn" onclick="toggleTheme()">☀️ Day</button>
+        <button id="soundBtn" type="button" class="btn" onclick="toggleSound()">🔊 সাউন্ড</button>
+      </div>
+    </div>
+
+    <!-- LOBBY -->
+    <div id="lobbyView" class="card">
+      <label for="nameInput">আপনার নাম</label>
+      <input id="nameInput" type="text" maxlength="16" placeholder="যেমন: লাবিব" />
+
+      <div class="tabs">
+        <button id="tCreate" type="button" class="tab-btn active" onclick="setTab('create')">➕ রুম তৈরি</button>
+        <button id="tJoin" type="button" class="tab-btn" onclick="setTab('join')">🔗 রুম যোগদান</button>
+        <button id="tAi" type="button" class="tab-btn" onclick="setTab('ai')">🤖 কম্পিউটার</button>
+      </div>
+
+      <div id="gridPanel" class="grid-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:12px;font-weight:700;">বোর্ডের সাইজ</span>
+          <span id="gridSummary" style="font-size:12px;font-weight:800;color:#a855f7;">৪ × ৪ বক্স</span>
+        </div>
+        <div class="presets">
+          <button type="button" class="preset-btn" onclick="setGrid(3,3)">৩×৩</button>
+          <button type="button" class="preset-btn" onclick="setGrid(4,4)">৪×৪</button>
+          <button type="button" class="preset-btn" onclick="setGrid(5,5)">৫×৫</button>
+          <button type="button" class="preset-btn" onclick="setGrid(7,7)">৭×৭</button>
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span>সারি (Rows)</span><span id="rVal">4</span></div>
+          <input id="rSlider" type="range" min="2" max="10" value="4" oninput="syncSliders()" />
+        </div>
+        <div class="slider-row">
+          <div class="slider-top"><span>কলাম (Columns)</span><span id="cVal">4</span></div>
+          <input id="cSlider" type="range" min="2" max="10" value="4" oninput="syncSliders()" />
+        </div>
+      </div>
+
+      <div id="timerPanel" class="timer-row">
+        <div>
+          <div style="font-size:12px;font-weight:800;">প্রতি চালের টাইমার (সেকেন্ড)</div>
+          <div style="font-size:11px;color:#94a3b8;">নির্ধারিত সময়ে চাল না দিলে স্বয়ংক্রিয় চাল হবে</div>
+        </div>
+        <input id="timerInput" type="number" min="5" max="120" value="15" />
+      </div>
+
+      <div id="pCreate">
+        <button type="button" class="primary-btn" onclick="createRoom()">নতুন রুম তৈরি করুন</button>
+        <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:8px;">৫-সংখ্যার কোড তৈরি করে বন্ধুর সাথে শেয়ার করুন।</div>
+      </div>
+
+      <div id="pJoin" style="display:none;">
+        <label for="codeInput">৫-সংখ্যার রুম কোড</label>
+        <input id="codeInput" type="text" maxlength="5" inputmode="numeric" placeholder="যেমন: 48291" style="text-align:center;font-size:18px;font-weight:800;letter-spacing:6px;" />
+        <button type="button" class="primary-btn join-btn" onclick="joinRoom()">রুমে যোগ দিন</button>
+      </div>
+
+      <div id="pAi" style="display:none;">
+        <label>কম্পিউটারের লেভেল</label>
+        <div class="ai-row">
+          <button id="lvlEasy" type="button" class="ai-lvl" onclick="setAi('easy')">সহজ</button>
+          <button id="lvlMedium" type="button" class="ai-lvl" onclick="setAi('medium')">মাঝারি</button>
+          <button id="lvlHard" type="button" class="ai-lvl active" onclick="setAi('hard')">অনেক কঠিন</button>
+        </div>
+        <button type="button" class="primary-btn ai-btn" onclick="startAi()">কম্পিউটারের সাথে খেলা শুরু করুন</button>
+      </div>
+
+      <div id="errBox" class="err-msg"></div>
+    </div>
+
+    <!-- GAME -->
+    <div id="gameView">
+      <div id="roomBar" class="card room-bar">
+        <div>
+          রুম কোড: <strong id="roomCodeText" style="color:#eab308;letter-spacing:2px;">-----</strong>
+          <button type="button" class="btn" style="padding:4px 8px;font-size:11px;margin-left:6px;" onclick="copyCode()">কপি</button>
+        </div>
+        <div id="roomStatusText" style="color:#94a3b8;">অপেক্ষা করা হচ্ছে...</div>
+      </div>
+
+      <div class="scores">
+        <div id="p1Box" class="card p-card p1 active">
+          <div id="p1Title" style="font-size:12px;font-weight:700;">আপনি</div>
+          <div id="p1Score" class="p-score">0</div>
+        </div>
+        <div>
+          <div id="turnBadge" class="turn-pill">আপনার চাল</div>
+          <div id="clockBadge" class="clock-pill">⏱️ 15s</div>
+          <div id="dimInfo" style="font-size:11px;color:#94a3b8;text-align:center;margin-top:3px;">৪ × ৪ বক্স</div>
+        </div>
+        <div id="p2Box" class="card p-card p2">
+          <div id="p2Title" style="font-size:12px;font-weight:700;">কম্পিউটার</div>
+          <div id="p2Score" class="p-score">0</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding:12px;">
+        <canvas id="board" width="440" height="440"></canvas>
+      </div>
+
+      <div id="resultText" class="result-box"></div>
+
+      <div class="footer-btns">
+        <button type="button" class="btn" onclick="backLobby()">← লবি</button>
+        <button type="button" class="btn" onclick="restartMatch()">🔄 আবার খেলুন</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="made-by">MADE BY LABIB</footer>
+
+  <div id="toast" class="toast">কপি করা হয়েছে!</div>
+
+  <script type="module">
+    try {
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDfEr7BWR0HIF8XCXgLKb1g69-iBBvcEzo",
+        authDomain: "dot-gamje.firebaseapp.com",
+        projectId: "dot-gamje",
+        storageBucket: "dot-gamje.firebasestorage.app",
+        messagingSenderId: "284960337589",
+        appId: "1:284960337589:web:82c2c00aa820100610d8fc",
+        measurementId: "G-FKSW5MCYM5"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      window.fb = { db, doc, setDoc, getDoc, updateDoc, onSnapshot };
+    } catch (e) {
+      window.fb = null;
+    }
+  </script>
+
+  <script>
+    const PURPLE = '#a855f7';
+    const PURPLE_FILL = 'rgba(168, 85, 247, 0.25)';
+    const YELLOW = '#eab308';
+    const YELLOW_FILL = 'rgba(234, 179, 8, 0.25)';
+
+    let isDay = false;
+    let soundOn = true;
+    let aiLevel = 'hard';
+    let mode = null; // 'ai' | 'online'
+    let myRole = 1;
+    let roomId = null;
+    let unsub = null;
+    let aiTimer = null;
+    let countdownInterval = null;
+
+    let rows = 4;
+    let cols = 4;
+    let hEdges = {};
+    let vEdges = {};
+    let boxes = {};
+    let turn = 1;
+    let scores = { 1: 0, 2: 0 };
+    let p1Name = 'আপনি';
+    let p2Name = 'কম্পিউটার';
+    let gameEnded = false;
+    let metrics = { pad: 34, cell: 56 };
+
+    // Timer state
+    let customTurnSeconds = 15;
+    let timeLeft = 15;
+
+    // Bounce/step animation state for newly drawn line
+    let lastEdge = null; // { type, r, c }
+    let edgeAnimStart = 0;
+    let animFrameId = null;
+
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+
+    function showErr(msg) {
+      const box = document.getElementById('errBox');
+      if (!msg) {
+        box.style.display = 'none';
+        box.textContent = '';
+        return;
+      }
+      box.textContent = msg;
+      box.style.display = 'block';
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1800);
+    }
+
+    function toggleTheme() {
+      isDay = !isDay;
+      document.body.classList.toggle('day', isDay);
+      document.getElementById('themeBtn').textContent = isDay ? '🌙 Night' : '☀️ Day';
+      drawBoard();
+    }
+
+    function toggleSound() {
+      soundOn = !soundOn;
+      document.getElementById('soundBtn').textContent = soundOn ? '🔊 সাউন্ড' : '🔇 সাউন্ড';
+    }
+
+    function beep(freq, dur = 0.08) {
+      if (!soundOn) return;
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        const ac = new Ctx();
+        const osc = ac.createOscillator();
+        const g = ac.createGain();
+        osc.frequency.value = freq;
+        g.gain.value = 0.08;
+        g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
+        osc.connect(g);
+        g.connect(ac.destination);
+        osc.start();
+        osc.stop(ac.currentTime + dur);
+      } catch (e) {}
+    }
+
+    function setTab(tab) {
+      showErr('');
+      ['create', 'join', 'ai'].forEach(k => {
+        document.getElementById('t' + k[0].toUpperCase() + k.slice(1)).classList.toggle('active', k === tab);
+        document.getElementById('p' + k[0].toUpperCase() + k.slice(1)).style.display = k === tab ? 'block' : 'none';
+      });
+      document.getElementById('gridPanel').style.display = tab === 'join' ? 'none' : 'block';
+    }
+
+    function syncSliders() {
+      rows = parseInt(document.getElementById('rSlider').value, 10) || 4;
+      cols = parseInt(document.getElementById('cSlider').value, 10) || 4;
+      document.getElementById('rVal').textContent = rows;
+      document.getElementById('cVal').textContent = cols;
+      document.getElementById('gridSummary').textContent = `${rows} × ${cols} বক্স`;
+    }
+
+    function setGrid(r, c) {
+      document.getElementById('rSlider').value = r;
+      document.getElementById('cSlider').value = c;
+      syncSliders();
+    }
+
+    function setAi(lvl) {
+      aiLevel = lvl;
+      ['easy', 'medium', 'hard'].forEach(k => {
+        document.getElementById('lvl' + k[0].toUpperCase() + k.slice(1)).classList.toggle('active', k === lvl);
+      });
+    }
+
+    function getName(fallback) {
+      const v = document.getElementById('nameInput').value.trim();
+      return v || fallback;
+    }
+
+    function getCustomTimerValue() {
+      const raw = parseInt(document.getElementById('timerInput').value, 10);
+      if (isNaN(raw) || raw < 3) return 15;
+      return Math.min(300, raw);
+    }
+
+    function stopTimers() {
+      clearTimeout(aiTimer);
+      clearInterval(countdownInterval);
+      aiTimer = null;
+      countdownInterval = null;
+    }
+
+    function resetTurnClock() {
+      clearInterval(countdownInterval);
+      timeLeft = customTurnSeconds;
+      updateClockUI();
+      if (gameEnded) return;
+
+      countdownInterval = setInterval(() => {
+        if (gameEnded) {
+          clearInterval(countdownInterval);
+          return;
+        }
+        timeLeft--;
+        updateClockUI();
+
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          handleTimeExpired();
+        }
+      }, 1000);
+    }
+
+    function updateClockUI() {
+      const el = document.getElementById('clockBadge');
+      if (!el) return;
+      el.textContent = `⏱️ ${Math.max(0, timeLeft)}s`;
+      el.classList.toggle('danger', timeLeft <= 3 && !gameEnded);
+    }
+
+    function handleTimeExpired() {
+      if (gameEnded) return;
+      // Pick a move automatically when time runs out for active human turn
+      if (mode === 'ai' && turn === 1) {
+        const moves = getAllAvailableMoves();
+        if (moves.length) {
+          const pick = moves[Math.floor(Math.random() * moves.length)];
+          doMove(pick.type, pick.r, pick.c, 1);
+        }
+      } else if (mode === 'online' && turn === myRole) {
+        const moves = getAllAvailableMoves();
+        if (moves.length) {
+          const pick = moves[Math.floor(Math.random() * moves.length)];
+          doMove(pick.type, pick.r, pick.c, myRole);
+        }
+      }
+    }
+
+    function resetState(r, c) {
+      stopTimers();
+      rows = r;
+      cols = c;
+      hEdges = {};
+      vEdges = {};
+      boxes = {};
+      turn = 1;
+      scores = { 1: 0, 2: 0 };
+      lastEdge = null;
+      gameEnded = false;
+      customTurnSeconds = getCustomTimerValue();
+      document.getElementById('resultText').textContent = '';
+    }
+
+    function openGameView() {
+      document.getElementById('lobbyView').style.display = 'none';
+      document.getElementById('gameView').style.display = 'block';
+      document.getElementById('roomBar').style.display = mode === 'online' ? 'flex' : 'none';
+      updateHeader();
+      drawBoard();
+      resetTurnClock();
+    }
+
+    function backLobby() {
+      stopTimers();
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      if (unsub) { unsub(); unsub = null; }
+      mode = null;
+      roomId = null;
+      document.getElementById('gameView').style.display = 'none';
+      document.getElementById('lobbyView').style.display = 'block';
+    }
+
+    function startAi() {
+      showErr('');
+      mode = 'ai';
+      myRole = 1;
+      roomId = null;
+      p1Name = getName('আপনি');
+      p2Name = aiLevel === 'hard' ? 'কম্পিউটার (কঠিন)' : aiLevel === 'medium' ? 'কম্পিউটার (মাঝারি)' : 'কম্পিউটার (সহজ)';
+      resetState(rows, cols);
+      openGameView();
+    }
+
+    async function createRoom() {
+      showErr('');
+      if (!window.fb) {
+        showErr('অনলাইন ডাটাবেজ সংযোগ নেই। কম্পিউটার মোডে খেলতে পারেন।');
+        return;
+      }
+      const code = String(Math.floor(10000 + Math.random() * 90000));
+      mode = 'online';
+      myRole = 1;
+      roomId = code;
+      p1Name = getName('প্লেয়ার ১');
+      p2Name = 'প্লেয়ার ২';
+      resetState(rows, cols);
+
+      try {
+        const ref = window.fb.doc(window.fb.db, 'dot_rooms', code);
+        await window.fb.setDoc(ref, {
+          rows, cols, hEdges, vEdges, boxes, turn, scores,
+          p1Name, p2Name: '', status: 'waiting', turnSeconds: customTurnSeconds
+        });
+        document.getElementById('roomCodeText').textContent = code;
+        listenRoom(code);
+        openGameView();
+      } catch (e) {
+        showErr('রুম তৈরি করা যায়নি। আবার চেষ্টা করুন।');
+      }
+    }
+
+    async function joinRoom() {
+      showErr('');
+      if (!window.fb) {
+        showErr('অনলাইন ডাটাবেজ সংযোগ নেই। কম্পিউটার মোডে খেলতে পারেন।');
+        return;
+      }
+      const code = document.getElementById('codeInput').value.trim();
+      if (!/^\d{5}$/.test(code)) {
+        showErr('সঠিক ৫-সংখ্যার রুম কোড দিন।');
+        return;
+      }
+      try {
+        const ref = window.fb.doc(window.fb.db, 'dot_rooms', code);
+        const snap = await window.fb.getDoc(ref);
+        if (!snap.exists()) {
+          showErr('এই রুম কোডটি পাওয়া যায়নি।');
+          return;
+        }
+        const d = snap.data();
+        const joinName = getName('প্লেয়ার ২');
+        await window.fb.updateDoc(ref, { p2Name: joinName, status: 'playing' });
+        mode = 'online';
+        myRole = 2;
+        roomId = code;
+        customTurnSeconds = d.turnSeconds || getCustomTimerValue();
+        document.getElementById('roomCodeText').textContent = code;
+        listenRoom(code);
+        openGameView();
+      } catch (e) {
+        showErr('রুমে যুক্ত হওয়া যায়নি।');
+      }
+    }
+
+    function listenRoom(code) {
+      if (unsub) unsub();
+      const ref = window.fb.doc(window.fb.db, 'dot_rooms', code);
+      unsub = window.fb.onSnapshot(ref, (snap) => {
+        if (!snap.exists()) return;
+        const d = snap.data();
+        const prevTurn = turn;
+        rows = d.rows || 4;
+        cols = d.cols || 4;
+        hEdges = d.hEdges || {};
+        vEdges = d.vEdges || {};
+        boxes = d.boxes || {};
+        turn = d.turn || 1;
+        scores = d.scores || { 1: 0, 2: 0 };
+        p1Name = d.p1Name || 'প্লেয়ার ১';
+        p2Name = d.p2Name || 'প্লেয়ার ২';
+        if (d.turnSeconds) customTurnSeconds = d.turnSeconds;
+        gameEnded = d.status === 'finished';
+        document.getElementById('roomStatusText').textContent = d.status === 'waiting' ? 'অপেক্ষা করা হচ্ছে...' : 'যুক্ত হয়েছে';
+        updateHeader();
+        drawBoard();
+        if (prevTurn !== turn && !gameEnded) resetTurnClock();
+      });
+    }
+
+    function restartMatch() {
+      resetState(rows, cols);
+      if (mode === 'online' && roomId && window.fb) {
+        const ref = window.fb.doc(window.fb.db, 'dot_rooms', roomId);
+        window.fb.updateDoc(ref, { hEdges, vEdges, boxes, turn, scores, status: 'playing' }).catch(() => {});
+      }
+      updateHeader();
+      drawBoard();
+      resetTurnClock();
+    }
+
+    function copyCode() {
+      if (!roomId) return;
+      navigator.clipboard?.writeText(roomId);
+      showToast('রুম কোড কপি হয়েছে!');
+    }
+
+    function boxSides(br, bc, hMap = hEdges, vMap = vEdges) {
+      if (br < 0 || br >= rows || bc < 0 || bc >= cols) return 0;
+      let n = 0;
+      if (hMap[`${br},${bc}`]) n++;
+      if (hMap[`${br + 1},${bc}`]) n++;
+      if (vMap[`${br},${bc}`]) n++;
+      if (vMap[`${br},${bc + 1}`]) n++;
+      return n;
+    }
+
+    function claimBoxes(type, r, c, player) {
+      let got = 0;
+      const check = (br, bc) => {
+        if (br < 0 || br >= rows || bc < 0 || bc >= cols) return;
+        const k = `${br},${bc}`;
+        if (!boxes[k] && boxSides(br, bc) === 4) {
+          boxes[k] = player;
+          scores[player]++;
+          got++;
+        }
+      };
+      if (type === 'h') { check(r - 1, c); check(r, c); }
+      else { check(r, c - 1); check(r, c); }
+      return got;
+    }
+
+    function triggerLineStepAnim(type, r, c) {
+      lastEdge = { type, r, c };
+      edgeAnimStart = performance.now();
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+
+      const step = (now) => {
+        drawBoard(now);
+        if (now - edgeAnimStart < 340) {
+          animFrameId = requestAnimationFrame(step);
+        } else {
+          lastEdge = null;
+          drawBoard();
+        }
+      };
+      animFrameId = requestAnimationFrame(step);
+    }
+
+    async function doMove(type, r, c, player) {
+      if (gameEnded) return;
+      const k = `${r},${c}`;
+      if (type === 'h' && hEdges[k]) return;
+      if (type === 'v' && vEdges[k]) return;
+
+      if (type === 'h') hEdges[k] = player;
+      else vEdges[k] = player;
+
+      triggerLineStepAnim(type, r, c);
+
+      const got = claimBoxes(type, r, c, player);
+      beep(got > 0 ? 780 : 500, got > 0 ? 0.12 : 0.07);
+
+      if (Object.keys(boxes).length === rows * cols) {
+        gameEnded = true;
+        clearInterval(countdownInterval);
+        updateClockUI();
+        const res = document.getElementById('resultText');
+        if (scores[1] > scores[2]) res.textContent = `${p1Name} জিতেছেন! (${scores[1]} - ${scores[2]})`;
+        else if (scores[2] > scores[1]) res.textContent = `${p2Name} জিতেছেন! (${scores[2]} - ${scores[1]})`;
+        else res.textContent = `ম্যাচ ড্র! (${scores[1]} - ${scores[2]})`;
+      } else if (got === 0) {
+        turn = player === 1 ? 2 : 1;
+        resetTurnClock();
+      } else {
+        resetTurnClock();
+      }
+
+      if (mode === 'online' && roomId && window.fb) {
+        try {
+          const ref = window.fb.doc(window.fb.db, 'dot_rooms', roomId);
+          await window.fb.updateDoc(ref, {
+            hEdges, vEdges, boxes, turn, scores,
+            status: gameEnded ? 'finished' : 'playing'
+          });
+        } catch (e) {}
+      }
+
+      updateHeader();
+      drawBoard();
+
+      if (mode === 'ai' && !gameEnded && turn === 2) {
+        aiTimer = setTimeout(aiMove, 1000);
+      }
+    }
+
+    function getAllAvailableMoves() {
+      const moves = [];
+      for (let r = 0; r <= rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (!hEdges[`${r},${c}`]) moves.push({ type: 'h', r, c });
+        }
+      }
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c <= cols; c++) {
+          if (!vEdges[`${r},${c}`]) moves.push({ type: 'v', r, c });
+        }
+      }
+      return moves;
+    }
+
+    function countBoxesCompletedByMove(m, hMap, vMap) {
+      const th = { ...hMap };
+      const tv = { ...vMap };
+      if (m.type === 'h') th[`${m.r},${m.c}`] = 2;
+      else tv[`${m.r},${m.c}`] = 2;
+
+      let completed = 0;
+      if (m.type === 'h') {
+        if (boxSides(m.r - 1, m.c, th, tv) === 4) completed++;
+        if (boxSides(m.r, m.c, th, tv) === 4) completed++;
+      } else {
+        if (boxSides(m.r, m.c - 1, th, tv) === 4) completed++;
+        if (boxSides(m.r, m.c, th, tv) === 4) completed++;
+      }
+      return { completed, th, tv };
+    }
+
+    function countThreeSidedBoxes(hMap, vMap) {
+      let threes = 0;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (boxSides(r, c, hMap, vMap) === 3) threes++;
+        }
+      }
+      return threes;
+    }
+
+    function aiMove() {
+      if (mode !== 'ai' || gameEnded || turn !== 2) return;
+      const moves = getAllAvailableMoves();
+      if (!moves.length) return;
+
+      let chosen = null;
+
+      if (aiLevel === 'easy') {
+        chosen = moves[Math.floor(Math.random() * moves.length)];
+      } else {
+        // 1. Always capture boxes if available (prefer moves that capture most boxes)
+        let bestCapture = null;
+        let maxCaps = 0;
+        for (const m of moves) {
+          const { completed } = countBoxesCompletedByMove(m, hEdges, vEdges);
+          if (completed > maxCaps) {
+            maxCaps = completed;
+            bestCapture = m;
+          }
+        }
+        if (bestCapture) {
+          chosen = bestCapture;
+        } else {
+          // 2. Avoid creating 3-sided boxes that hand easy boxes to opponent
+          const currentThrees = countThreeSidedBoxes(hEdges, vEdges);
+          const nonTrapMoves = [];
+          for (const m of moves) {
+            const { th, tv } = countBoxesCompletedByMove(m, hEdges, vEdges);
+            const nextThrees = countThreeSidedBoxes(th, tv);
+            if (nextThrees <= currentThrees) {
+              nonTrapMoves.push({ move: m, nextThrees });
+            }
+          }
+
+          if (nonTrapMoves.length > 0) {
+            // In hard mode, prefer center/connected safe edges to build chains
+            if (aiLevel === 'hard') {
+              const centerR = rows / 2;
+              const centerC = cols / 2;
+              nonTrapMoves.sort((a, b) => {
+                const da = Math.hypot(a.move.r - centerR, a.move.c - centerC);
+                const db = Math.hypot(b.move.r - centerR, b.move.c - centerC);
+                return da - db;
+              });
+              chosen = nonTrapMoves[0].move;
+            } else {
+              chosen = nonTrapMoves[Math.floor(Math.random() * nonTrapMoves.length)].move;
+            }
+          } else {
+            // Forced trap: pick move creating the fewest 3-sided boxes
+            moves.sort((a, b) => {
+              const sa = countBoxesCompletedByMove(a, hEdges, vEdges);
+              const sb = countBoxesCompletedByMove(b, hEdges, vEdges);
+              return countThreeSidedBoxes(sa.th, sa.tv) - countThreeSidedBoxes(sb.th, sb.tv);
+            });
+            chosen = moves[0];
+          }
+        }
+      }
+
+      if (chosen) doMove(chosen.type, chosen.r, chosen.c, 2);
+    }
+
+    function drawBoard(now = performance.now()) {
+      const maxDim = Math.max(rows, cols);
+      const pad = 32;
+      const cell = Math.min(62, Math.floor(380 / maxDim));
+      const w = pad * 2 + cols * cell;
+      const h = pad * 2 + rows * cell;
+      metrics = { pad, cell };
+
+      canvas.width = w;
+      canvas.height = h;
+      ctx.clearRect(0, 0, w, h);
+
+      // Draw claimed boxes with player's name
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const owner = boxes[`${r},${c}`];
+          if (owner) {
+            const x = pad + c * cell + 5;
+            const y = pad + r * cell + 5;
+            const sz = cell - 10;
+            ctx.fillStyle = owner === 1 ? PURPLE_FILL : YELLOW_FILL;
+            ctx.fillRect(x, y, sz, sz);
+
+            const displayName = owner === 1 ? p1Name : p2Name;
+            const shortName = displayName.length > 7 ? displayName.slice(0, 6) + '…' : displayName;
+            ctx.fillStyle = isDay ? (owner === 1 ? '#6b21a8' : '#854d0e') : (owner === 1 ? '#e9d5ff' : '#fef08a');
+            ctx.font = `800 ${Math.max(11, Math.min(14, Math.floor(sz * 0.28)))}px 'Hind Siliguri', Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(shortName, x + sz / 2, y + sz / 2);
+          }
+        }
+      }
+
+      const emptyStroke = isDay ? 'rgba(15, 23, 42, 0.22)' : 'rgba(148, 163, 184, 0.25)';
+
+      const getStepOffset = (type, r, c) => {
+        if (!lastEdge || lastEdge.type !== type || lastEdge.r !== r || lastEdge.c !== c) return 0;
+        const elapsed = now - edgeAnimStart;
+        if (elapsed < 0 || elapsed > 340) return 0;
+        const progress = elapsed / 340;
+        // Light hop/bounce curve: goes up then settles smoothly
+        return -Math.sin(progress * Math.PI) * 5 * (1 - progress * 0.5);
+      };
+
+      // Horizontal lines
+      for (let r = 0; r <= rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const owner = hEdges[`${r},${c}`];
+          const hopY = owner ? getStepOffset('h', r, c) : 0;
+          ctx.beginPath();
+          ctx.moveTo(pad + c * cell, pad + r * cell + hopY);
+          ctx.lineTo(pad + (c + 1) * cell, pad + r * cell + hopY);
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = owner ? (owner === 1 ? PURPLE : YELLOW) : emptyStroke;
+          ctx.lineWidth = owner ? (hopY !== 0 ? 7.5 : 6) : 3;
+          ctx.stroke();
+        }
+      }
+
+      // Vertical lines
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c <= cols; c++) {
+          const owner = vEdges[`${r},${c}`];
+          const hopX = owner ? getStepOffset('v', r, c) : 0;
+          ctx.beginPath();
+          ctx.moveTo(pad + c * cell + hopX, pad + r * cell);
+          ctx.lineTo(pad + c * cell + hopX, pad + (r + 1) * cell);
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = owner ? (owner === 1 ? PURPLE : YELLOW) : emptyStroke;
+          ctx.lineWidth = owner ? (hopX !== 0 ? 7.5 : 6) : 3;
+          ctx.stroke();
+        }
+      }
+
+      // Dots
+      for (let r = 0; r <= rows; r++) {
+        for (let c = 0; c <= cols; c++) {
+          ctx.beginPath();
+          ctx.arc(pad + c * cell, pad + r * cell, 5.5, 0, Math.PI * 2);
+          ctx.fillStyle = isDay ? '#0f172a' : '#ffffff';
+          ctx.fill();
+        }
+      }
+    }
+
+    function distSeg(px, py, x1, y1, x2, y2) {
+      const l2 = (x2 - x1) ** 2 + (y2 - y1) ** 2;
+      if (!l2) return Math.hypot(px - x1, py - y1);
+      const t = Math.max(0, Math.min(1, ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2));
+      return Math.hypot(px - (x1 + t * (x2 - x1)), py - (y1 + t * (y2 - y1)));
+    }
+
+    canvas.addEventListener('click', (e) => {
+      if (gameEnded) return;
+      if (mode === 'ai' && turn !== 1) return;
+      if (mode === 'online' && turn !== myRole) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+      const { pad, cell } = metrics;
+
+      let best = null;
+      let minD = 16;
+
+      for (let r = 0; r <= rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (hEdges[`${r},${c}`]) continue;
+          const d = distSeg(x, y, pad + c * cell, pad + r * cell, pad + (c + 1) * cell, pad + r * cell);
+          if (d < minD) { minD = d; best = { type: 'h', r, c }; }
+        }
+      }
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c <= cols; c++) {
+          if (vEdges[`${r},${c}`]) continue;
+          const d = distSeg(x, y, pad + c * cell, pad + r * cell, pad + c * cell, pad + (r + 1) * cell);
+          if (d < minD) { minD = d; best = { type: 'v', r, c }; }
+        }
+      }
+
+      if (best) doMove(best.type, best.r, best.c, turn);
+    });
+
+    function updateHeader() {
+      document.getElementById('p1Title').textContent = p1Name;
+      document.getElementById('p2Title').textContent = p2Name;
+      document.getElementById('p1Score').textContent = scores[1] || 0;
+      document.getElementById('p2Score').textContent = scores[2] || 0;
+      document.getElementById('dimInfo').textContent = `${rows} × ${cols} বক্স`;
+      document.getElementById('p1Box').classList.toggle('active', !gameEnded && turn === 1);
+      document.getElementById('p2Box').classList.toggle('active', !gameEnded && turn === 2);
+
+      const badge = document.getElementById('turnBadge');
+      if (gameEnded) badge.textContent = 'খেলা শেষ';
+      else if ((mode === 'ai' && turn === 1) || (mode === 'online' && turn === myRole)) badge.textContent = 'আপনার চাল';
+      else badge.textContent = mode === 'ai' ? 'কম্পিউটার চাল দিচ্ছে...' : 'প্রতিপক্ষের চাল';
+    }
+  </script>
+</body>
+</html>

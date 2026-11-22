@@ -11,7 +11,7 @@
     :root {
       --bg-color: #090d16;
       --bg-image: none;
-      --card-bg: rgba(17, 24, 39, 0.9);
+      --card-bg: rgba(17, 24, 39, 0.92);
       --card-border: rgba(148, 163, 184, 0.22);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
@@ -20,7 +20,7 @@
       --btn-border: rgba(148, 163, 184, 0.3);
     }
     body.day {
-      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-bg: rgba(255, 255, 255, 0.92);
       --card-border: rgba(15, 23, 42, 0.16);
       --text-main: #0f172a;
       --text-muted: #475569;
@@ -48,7 +48,7 @@
     }
     .wrap {
       width: 100%;
-      max-width: 540px;
+      max-width: 560px;
       margin: auto 0;
     }
     .top-bar {
@@ -111,12 +111,12 @@
       background: var(--surface-bg);
       color: var(--text-main);
       font-size: 14px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .tabs {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 6px;
       background: var(--surface-bg);
       padding: 5px;
@@ -128,9 +128,9 @@
       border: 0;
       background: transparent;
       color: var(--text-muted);
-      padding: 8px 6px;
+      padding: 8px 4px;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -161,6 +161,10 @@
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
+    }
+    .preset-btn.active {
+      border-color: #a855f7;
+      background: rgba(168, 85, 247, 0.25);
     }
 
     .slider-row {
@@ -297,29 +301,32 @@
       font-size: 12px;
     }
 
-    .scores {
+    .scores-grid {
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
     }
     .p-card {
-      padding: 10px 12px;
+      padding: 9px 11px;
       border-radius: 12px;
       border: 2px solid transparent;
     }
-    .p-card.p1.active { border-color: #a855f7; }
-    .p-card.p2.active { border-color: #eab308; }
-    .p-card.p2 { text-align: right; }
     .p-score {
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 800;
       line-height: 1.1;
-      margin-top: 4px;
+      margin-top: 3px;
     }
-    .p1 .p-score { color: #a855f7; }
-    .p2 .p-score { color: #eab308; }
+
+    .status-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
 
     .turn-pill {
       padding: 6px 12px;
@@ -333,8 +340,7 @@
     body.day .turn-pill { color: #6b21a8; }
 
     .clock-pill {
-      margin-top: 5px;
-      padding: 3px 10px;
+      padding: 5px 11px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 800;
@@ -363,14 +369,61 @@
       margin-top: 12px;
     }
 
-    .result-box {
-      margin-top: 10px;
+    /* Congratulation Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(2, 6, 23, 0.78);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      flex-direction: column;
+    }
+    .modal-backdrop.show {
+      display: flex;
+    }
+    .congrats-card {
+      width: 100%;
+      max-width: 390px;
+      background: var(--card-bg);
+      border: 2px solid #a855f7;
+      border-radius: 20px;
+      padding: 24px 20px;
       text-align: center;
-      font-size: 15px;
-      font-weight: 800;
-      min-height: 22px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+    .congrats-heading {
+      font-size: 26px;
+      font-weight: 900;
       color: #eab308;
-      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+      margin: 0 0 8px;
+    }
+    .winner-name-big {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 6px 0 14px;
+    }
+    .modal-score-summary {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .modal-made-by {
+      margin-top: 12px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1.8px;
+      color: #f8fafc;
+      text-align: center;
     }
 
     .made-by {
@@ -398,6 +451,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
+      z-index: 70;
     }
     .toast.show { opacity: 1; }
   </style>
@@ -423,6 +477,7 @@
       <div class="tabs">
         <button id="tCreate" type="button" class="tab-btn active" onclick="setTab('create')">➕ রুম তৈরি</button>
         <button id="tJoin" type="button" class="tab-btn" onclick="setTab('join')">🔗 রুম যোগদান</button>
+        <button id="tMulti" type="button" class="tab-btn" onclick="setTab('multi')">👥 লোকাল প্লেয়ার</button>
         <button id="tAi" type="button" class="tab-btn" onclick="setTab('ai')">🤖 কম্পিউটার</button>
       </div>
 
@@ -480,6 +535,17 @@
         <button type="button" class="primary-btn join-btn" onclick="joinRoom()">রুমে যোগ দিন</button>
       </div>
 
+      <div id="pMulti" style="display:none;">
+        <label>একই ডিভাইসে কয়জন খেলবেন?</label>
+        <div class="presets" style="grid-template-columns:repeat(3,1fr);">
+          <button id="cnt2" type="button" class="preset-btn active" onclick="setPlayerCount(2)">২ জন</button>
+          <button id="cnt3" type="button" class="preset-btn" onclick="setPlayerCount(3)">৩ জন</button>
+          <button id="cnt4" type="button" class="preset-btn" onclick="setPlayerCount(4)">৪ জন</button>
+        </div>
+        <div id="multiNamesBox" style="margin-top:8px;"></div>
+        <button type="button" class="primary-btn" style="margin-top:6px;" onclick="startLocalMulti()">একসাথে খেলা শুরু করুন</button>
+      </div>
+
       <div id="pAi" style="display:none;">
         <label>কম্পিউটারের লেভেল</label>
         <div class="ai-row">
@@ -503,33 +569,38 @@
         <div id="roomStatusText" style="color:var(--text-muted);">অপেক্ষা করা হচ্ছে...</div>
       </div>
 
-      <div class="scores">
-        <div id="p1Box" class="card p-card p1 active">
-          <div id="p1Title" style="font-size:12px;font-weight:700;">আপনি</div>
-          <div id="p1Score" class="p-score">0</div>
-        </div>
-        <div>
-          <div id="turnBadge" class="turn-pill">আপনার চাল</div>
-          <div id="clockBadge" class="clock-pill">⏱️ 15s</div>
-          <div id="dimInfo" style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:3px;">৪ × ৪ বক্স</div>
-        </div>
-        <div id="p2Box" class="card p-card p2">
-          <div id="p2Title" style="font-size:12px;font-weight:700;">কম্পিউটার</div>
-          <div id="p2Score" class="p-score">0</div>
-        </div>
+      <div id="scoresGrid" class="scores-grid"></div>
+
+      <div class="status-strip">
+        <div id="turnBadge" class="turn-pill">আপনার চাল</div>
+        <div id="clockBadge" class="clock-pill">⏱️ 15s</div>
+        <div id="dimInfo" style="font-size:11px;color:var(--text-muted);">৪ × ৪ বক্স</div>
       </div>
 
       <div class="card" style="padding:12px;">
         <canvas id="board" width="460" height="460"></canvas>
       </div>
 
-      <div id="resultText" class="result-box"></div>
-
       <div class="footer-btns">
         <button type="button" class="btn" onclick="backLobby()">← লবি</button>
         <button type="button" class="btn" onclick="restartMatch()">🔄 আবার খেলুন</button>
       </div>
     </div>
+  </div>
+
+  <!-- CONGRATULATION MODAL -->
+  <div id="congratsModal" class="modal-backdrop">
+    <div class="congrats-card">
+      <div style="font-size:42px;line-height:1;margin-bottom:6px;">🏆</div>
+      <h2 class="congrats-heading">অভিনন্দন</h2>
+      <div id="winnerNameDisplay" class="winner-name-big">জয়ী প্লেয়ার</div>
+      <div id="modalScoreSummary" class="modal-score-summary"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" style="flex:1;" onclick="backLobby()">লবি</button>
+        <button type="button" class="primary-btn" style="flex:1;padding:10px;font-size:13px;" onclick="restartMatch()">আবার খেলুন</button>
+      </div>
+    </div>
+    <div class="modal-made-by">MADE BY LABIB</div>
   </div>
 
   <footer class="made-by">MADE BY LABIB</footer>
@@ -560,15 +631,19 @@
   </script>
 
   <script>
-    const PURPLE = '#a855f7';
-    const PURPLE_FILL = 'rgba(168, 85, 247, 0.28)';
-    const YELLOW = '#eab308';
-    const YELLOW_FILL = 'rgba(234, 179, 8, 0.28)';
+    const PLAYER_PALETTE = [
+      { stroke: '#a855f7', fill: 'rgba(168, 85, 247, 0.28)', darkText: '#581c87', lightText: '#f3e8ff' },
+      { stroke: '#eab308', fill: 'rgba(234, 179, 8, 0.28)', darkText: '#713f12', lightText: '#fef9c3' },
+      { stroke: '#06b6d4', fill: 'rgba(6, 182, 212, 0.28)', darkText: '#155e75', lightText: '#cffafe' },
+      { stroke: '#f43f5e', fill: 'rgba(244, 63, 94, 0.28)', darkText: '#9f1239', lightText: '#ffe4e6' }
+    ];
 
     let isDay = false;
     let soundOn = true;
     let aiLevel = 'hard';
-    let mode = null; // 'ai' | 'online'
+    let mode = null; // 'ai' | 'online' | 'local'
+    let localPlayerCount = 2;
+    let players = []; // [{ id: 1, name: '...', score: 0 }]
     let myRole = 1;
     let roomId = null;
     let unsub = null;
@@ -581,9 +656,6 @@
     let vEdges = {};
     let boxes = {};
     let turn = 1;
-    let scores = { 1: 0, 2: 0 };
-    let p1Name = 'আপনি';
-    let p2Name = 'কম্পিউটার';
     let gameEnded = false;
     let metrics = { pad: 34, cell: 56 };
 
@@ -632,8 +704,9 @@
 
     function resetBackground() {
       document.documentElement.style.setProperty('--bg-image', 'none');
-      document.documentElement.style.setProperty('--bg-color', isDay ? '#e2e8f0' : '#090d16');
-      document.getElementById('bgColorPicker').value = isDay ? '#e2e8f0' : '#090d16';
+      const nextBg = isDay ? '#e2e8f0' : '#090d16';
+      document.documentElement.style.setProperty('--bg-color', nextBg);
+      document.getElementById('bgColorPicker').value = nextBg;
       document.getElementById('bgImageInput').value = '';
       showToast('ব্যাকগ্রাউন্ড রিসেট হয়েছে!');
     }
@@ -673,13 +746,33 @@
       } catch (e) {}
     }
 
+    function renderMultiNameInputs() {
+      const container = document.getElementById('multiNamesBox');
+      const mainName = document.getElementById('nameInput').value.trim();
+      let html = '';
+      for (let i = 1; i <= localPlayerCount; i++) {
+        const defaultVal = i === 1 && mainName ? mainName : `প্লেয়ার ${i}`;
+        html += `<input id="localPName${i}" type="text" maxlength="16" placeholder="প্লেয়ার ${i}-এর নাম" value="${defaultVal}" />`;
+      }
+      container.innerHTML = html;
+    }
+
+    function setPlayerCount(cnt) {
+      localPlayerCount = cnt;
+      [2, 3, 4].forEach(n => {
+        document.getElementById('cnt' + n).classList.toggle('active', n === cnt);
+      });
+      renderMultiNameInputs();
+    }
+
     function setTab(tab) {
       showErr('');
-      ['create', 'join', 'ai'].forEach(k => {
+      ['create', 'join', 'multi', 'ai'].forEach(k => {
         document.getElementById('t' + k[0].toUpperCase() + k.slice(1)).classList.toggle('active', k === tab);
         document.getElementById('p' + k[0].toUpperCase() + k.slice(1)).style.display = k === tab ? 'block' : 'none';
       });
       document.getElementById('gridPanel').style.display = tab === 'join' ? 'none' : 'block';
+      if (tab === 'multi') renderMultiNameInputs();
     }
 
     function syncSliders() {
@@ -737,7 +830,7 @@
 
         if (timeLeft <= 0) {
           clearInterval(countdownInterval);
-          shiftTurnOnTimeout();
+          autoMoveOnTimeout();
         }
       }, 1000);
     }
@@ -749,37 +842,38 @@
       el.classList.toggle('danger', timeLeft <= 3 && !gameEnded);
     }
 
-    async function shiftTurnOnTimeout() {
+    async function autoMoveOnTimeout() {
       if (gameEnded) return;
       const moves = getAllAvailableMoves();
       if (!moves.length) return;
 
-      if (mode === 'ai' && turn === 1) {
+      const shouldAuto =
+        (mode === 'ai' && turn === 1) ||
+        (mode === 'online' && turn === myRole) ||
+        (mode === 'local');
+
+      if (shouldAuto) {
         const pick = moves[Math.floor(Math.random() * moves.length)];
         showToast('সময় শেষ! অটোমেটিক চাল দেওয়া হয়েছে।');
-        await doMove(pick.type, pick.r, pick.c, 1);
-      } else if (mode === 'online' && turn === myRole) {
-        const pick = moves[Math.floor(Math.random() * moves.length)];
-        showToast('সময় শেষ! অটোমেটিক চাল দেওয়া হয়েছে।');
-        await doMove(pick.type, pick.r, pick.c, myRole);
+        await doMove(pick.type, pick.r, pick.c, turn);
       } else {
         resetTurnClock();
       }
     }
 
-    function resetState(r, c) {
+    function resetState(r, c, playerList) {
       stopTimers();
       rows = r;
       cols = c;
+      players = playerList.map(p => ({ ...p, score: 0 }));
       hEdges = {};
       vEdges = {};
       boxes = {};
       turn = 1;
-      scores = { 1: 0, 2: 0 };
       lastEdge = null;
       gameEnded = false;
       customTurnSeconds = getCustomTimerValue();
-      document.getElementById('resultText').textContent = '';
+      document.getElementById('congratsModal').classList.remove('show');
     }
 
     function openGameView() {
@@ -797,6 +891,7 @@
       if (unsub) { unsub(); unsub = null; }
       mode = null;
       roomId = null;
+      document.getElementById('congratsModal').classList.remove('show');
       document.getElementById('gameView').style.display = 'none';
       document.getElementById('lobbyView').style.display = 'block';
     }
@@ -806,31 +901,52 @@
       mode = 'ai';
       myRole = 1;
       roomId = null;
-      p1Name = getName('আপনি');
-      p2Name = aiLevel === 'hard' ? 'কম্পিউটার (কঠিন)' : aiLevel === 'medium' ? 'কম্পিউটার (মাঝারি)' : 'কম্পিউটার (সহজ)';
-      resetState(rows, cols);
+      const p1 = getName('আপনি');
+      const p2 = aiLevel === 'hard' ? 'কম্পিউটার (কঠিন)' : aiLevel === 'medium' ? 'কম্পিউটার (মাঝারি)' : 'কম্পিউটার (সহজ)';
+      resetState(rows, cols, [
+        { id: 1, name: p1 },
+        { id: 2, name: p2 }
+      ]);
+      openGameView();
+    }
+
+    function startLocalMulti() {
+      showErr('');
+      mode = 'local';
+      myRole = 1;
+      roomId = null;
+      const list = [];
+      for (let i = 1; i <= localPlayerCount; i++) {
+        const inp = document.getElementById('localPName' + i);
+        const nm = inp && inp.value.trim() ? inp.value.trim() : `প্লেয়ার ${i}`;
+        list.push({ id: i, name: nm });
+      }
+      resetState(rows, cols, list);
       openGameView();
     }
 
     async function createRoom() {
       showErr('');
       if (!window.fb) {
-        showErr('অনলাইন ডাটাবেজ সংযোগ নেই। কম্পিউটার মোডে খেলতে পারেন।');
+        showErr('অনলাইন ডাটাবেজ সংযোগ নেই। লোকাল প্লেয়ার বা কম্পিউটার মোডে খেলতে পারেন।');
         return;
       }
       const code = String(Math.floor(10000 + Math.random() * 90000));
       mode = 'online';
       myRole = 1;
       roomId = code;
-      p1Name = getName('প্লেয়ার ১');
-      p2Name = 'প্লেয়ার ২';
-      resetState(rows, cols);
+      const p1 = getName('প্লেয়ার ১');
+      resetState(rows, cols, [
+        { id: 1, name: p1 },
+        { id: 2, name: 'প্লেয়ার ২' }
+      ]);
 
       try {
         const ref = window.fb.doc(window.fb.db, 'dot_rooms', code);
         await window.fb.setDoc(ref, {
-          rows, cols, hEdges, vEdges, boxes, turn, scores,
-          p1Name, p2Name: '', status: 'waiting', turnSeconds: customTurnSeconds
+          rows, cols, hEdges, vEdges, boxes, turn,
+          scores: { 1: 0, 2: 0 },
+          p1Name: p1, p2Name: '', status: 'waiting', turnSeconds: customTurnSeconds
         });
         document.getElementById('roomCodeText').textContent = code;
         listenRoom(code);
@@ -843,7 +959,7 @@
     async function joinRoom() {
       showErr('');
       if (!window.fb) {
-        showErr('অনলাইন ডাটাবেজ সংযোগ নেই। কম্পিউটার মোডে খেলতে পারেন।');
+        showErr('অনলাইন ডাটাবেজ সংযোগ নেই। লোকাল প্লেয়ার বা কম্পিউটার মোডে খেলতে পারেন।');
         return;
       }
       const code = document.getElementById('codeInput').value.trim();
@@ -886,23 +1002,31 @@
         vEdges = d.vEdges || {};
         boxes = d.boxes || {};
         turn = d.turn || 1;
-        scores = d.scores || { 1: 0, 2: 0 };
-        p1Name = d.p1Name || 'প্লেয়ার ১';
-        p2Name = d.p2Name || 'প্লেয়ার ২';
+        const sc = d.scores || { 1: 0, 2: 0 };
+        players = [
+          { id: 1, name: d.p1Name || 'প্লেয়ার ১', score: sc[1] || 0 },
+          { id: 2, name: d.p2Name || 'প্লেয়ার ২', score: sc[2] || 0 }
+        ];
         if (d.turnSeconds) customTurnSeconds = d.turnSeconds;
         gameEnded = d.status === 'finished';
         document.getElementById('roomStatusText').textContent = d.status === 'waiting' ? 'অপেক্ষা করা হচ্ছে...' : 'যুক্ত হয়েছে';
         updateHeader();
         drawBoard();
-        if (prevTurn !== turn && !gameEnded) resetTurnClock();
+        if (gameEnded) showCongratulationModal();
+        else if (prevTurn !== turn) resetTurnClock();
       });
     }
 
     function restartMatch() {
-      resetState(rows, cols);
+      const currentNames = players.map(p => ({ id: p.id, name: p.name }));
+      resetState(rows, cols, currentNames);
       if (mode === 'online' && roomId && window.fb) {
         const ref = window.fb.doc(window.fb.db, 'dot_rooms', roomId);
-        window.fb.updateDoc(ref, { hEdges, vEdges, boxes, turn, scores, status: 'playing' }).catch(() => {});
+        window.fb.updateDoc(ref, {
+          hEdges, vEdges, boxes, turn,
+          scores: { 1: 0, 2: 0 },
+          status: 'playing'
+        }).catch(() => {});
       }
       updateHeader();
       drawBoard();
@@ -915,6 +1039,14 @@
       showToast('রুম কোড কপি হয়েছে!');
     }
 
+    function getPlayerById(id) {
+      return players.find(p => p.id === id) || players[0];
+    }
+
+    function getPlayerPalette(id) {
+      return PLAYER_PALETTE[(id - 1) % PLAYER_PALETTE.length];
+    }
+
     function boxSides(br, bc, hMap = hEdges, vMap = vEdges) {
       if (br < 0 || br >= rows || bc < 0 || bc >= cols) return 0;
       let n = 0;
@@ -925,14 +1057,15 @@
       return n;
     }
 
-    function claimBoxes(type, r, c, player) {
+    function claimBoxes(type, r, c, playerId) {
       let got = 0;
+      const pObj = getPlayerById(playerId);
       const check = (br, bc) => {
         if (br < 0 || br >= rows || bc < 0 || bc >= cols) return;
         const k = `${br},${bc}`;
         if (!boxes[k] && boxSides(br, bc) === 4) {
-          boxes[k] = player;
-          scores[player]++;
+          boxes[k] = playerId;
+          if (pObj) pObj.score++;
           got++;
         }
       };
@@ -958,30 +1091,48 @@
       animFrameId = requestAnimationFrame(step);
     }
 
-    async function doMove(type, r, c, player) {
+    function showCongratulationModal() {
+      const sorted = [...players].sort((a, b) => b.score - a.score);
+      const winnerEl = document.getElementById('winnerNameDisplay');
+      const summaryEl = document.getElementById('modalScoreSummary');
+
+      if (!sorted.length) return;
+      const topScore = sorted[0].score;
+      const tied = sorted.filter(p => p.score === topScore);
+
+      if (tied.length > 1) {
+        winnerEl.textContent = tied.map(p => p.name).join(' ও ') + ' (যৌথ জয়ী)';
+      } else {
+        winnerEl.textContent = sorted[0].name;
+      }
+
+      summaryEl.innerHTML = sorted.map(p => `${p.name}: <strong>${p.score}</strong> বক্স`).join(' • ');
+      document.getElementById('congratsModal').classList.add('show');
+    }
+
+    async function doMove(type, r, c, playerId) {
       if (gameEnded) return;
       const k = `${r},${c}`;
       if (type === 'h' && hEdges[k]) return;
       if (type === 'v' && vEdges[k]) return;
 
-      if (type === 'h') hEdges[k] = player;
-      else vEdges[k] = player;
+      if (type === 'h') hEdges[k] = playerId;
+      else vEdges[k] = playerId;
 
       triggerLineStepAnim(type, r, c);
 
-      const got = claimBoxes(type, r, c, player);
+      const got = claimBoxes(type, r, c, playerId);
       beep(got > 0 ? 780 : 500, got > 0 ? 0.12 : 0.07);
 
       if (Object.keys(boxes).length === rows * cols) {
         gameEnded = true;
         clearInterval(countdownInterval);
         updateClockUI();
-        const res = document.getElementById('resultText');
-        if (scores[1] > scores[2]) res.textContent = `${p1Name} জিতেছেন! (${scores[1]} - ${scores[2]})`;
-        else if (scores[2] > scores[1]) res.textContent = `${p2Name} জিতেছেন! (${scores[2]} - ${scores[1]})`;
-        else res.textContent = `ম্যাচ ড্র! (${scores[1]} - ${scores[2]})`;
+        showCongratulationModal();
       } else if (got === 0) {
-        turn = player === 1 ? 2 : 1;
+        const idx = players.findIndex(p => p.id === playerId);
+        const nextIdx = (idx + 1) % players.length;
+        turn = players[nextIdx].id;
         resetTurnClock();
       } else {
         resetTurnClock();
@@ -990,8 +1141,10 @@
       if (mode === 'online' && roomId && window.fb) {
         try {
           const ref = window.fb.doc(window.fb.db, 'dot_rooms', roomId);
+          const scObj = {};
+          players.forEach(p => { scObj[p.id] = p.score; });
           await window.fb.updateDoc(ref, {
-            hEdges, vEdges, boxes, turn, scores,
+            hEdges, vEdges, boxes, turn, scores: scObj,
             status: gameEnded ? 'finished' : 'playing'
           });
         } catch (e) {}
@@ -1122,17 +1275,19 @@
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          const owner = boxes[`${r},${c}`];
-          if (owner) {
+          const ownerId = boxes[`${r},${c}`];
+          if (ownerId) {
+            const pal = getPlayerPalette(ownerId);
+            const ownerObj = getPlayerById(ownerId);
             const x = pad + c * cell + 5;
             const y = pad + r * cell + 5;
             const sz = cell - 10;
-            ctx.fillStyle = owner === 1 ? PURPLE_FILL : YELLOW_FILL;
+            ctx.fillStyle = pal.fill;
             ctx.fillRect(x, y, sz, sz);
 
-            const displayName = owner === 1 ? p1Name : p2Name;
+            const displayName = ownerObj ? ownerObj.name : `P${ownerId}`;
             const shortName = displayName.length > 7 ? displayName.slice(0, 6) + '…' : displayName;
-            ctx.fillStyle = isDay ? (owner === 1 ? '#581c87' : '#713f12') : (owner === 1 ? '#f3e8ff' : '#fef9c3');
+            ctx.fillStyle = isDay ? pal.darkText : pal.lightText;
             ctx.font = `800 ${Math.max(11, Math.min(14, Math.floor(sz * 0.28)))}px 'Hind Siliguri', Arial, sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -1153,28 +1308,28 @@
 
       for (let r = 0; r <= rows; r++) {
         for (let c = 0; c < cols; c++) {
-          const owner = hEdges[`${r},${c}`];
-          const hopY = owner ? getStepOffset('h', r, c) : 0;
+          const ownerId = hEdges[`${r},${c}`];
+          const hopY = ownerId ? getStepOffset('h', r, c) : 0;
           ctx.beginPath();
           ctx.moveTo(pad + c * cell, pad + r * cell + hopY);
           ctx.lineTo(pad + (c + 1) * cell, pad + r * cell + hopY);
           ctx.lineCap = 'round';
-          ctx.strokeStyle = owner ? (owner === 1 ? PURPLE : YELLOW) : emptyStroke;
-          ctx.lineWidth = owner ? (hopY !== 0 ? 8 : 6.5) : 3.5;
+          ctx.strokeStyle = ownerId ? getPlayerPalette(ownerId).stroke : emptyStroke;
+          ctx.lineWidth = ownerId ? (hopY !== 0 ? 8 : 6.5) : 3.5;
           ctx.stroke();
         }
       }
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c <= cols; c++) {
-          const owner = vEdges[`${r},${c}`];
-          const hopX = owner ? getStepOffset('v', r, c) : 0;
+          const ownerId = vEdges[`${r},${c}`];
+          const hopX = ownerId ? getStepOffset('v', r, c) : 0;
           ctx.beginPath();
           ctx.moveTo(pad + c * cell + hopX, pad + r * cell);
           ctx.lineTo(pad + c * cell + hopX, pad + (r + 1) * cell);
           ctx.lineCap = 'round';
-          ctx.strokeStyle = owner ? (owner === 1 ? PURPLE : YELLOW) : emptyStroke;
-          ctx.lineWidth = owner ? (hopX !== 0 ? 8 : 6.5) : 3.5;
+          ctx.strokeStyle = ownerId ? getPlayerPalette(ownerId).stroke : emptyStroke;
+          ctx.lineWidth = ownerId ? (hopX !== 0 ? 8 : 6.5) : 3.5;
           ctx.stroke();
         }
       }
@@ -1234,16 +1389,24 @@
     });
 
     function updateHeader() {
-      document.getElementById('p1Title').textContent = p1Name;
-      document.getElementById('p2Title').textContent = p2Name;
-      document.getElementById('p1Score').textContent = scores[1] || 0;
-      document.getElementById('p2Score').textContent = scores[2] || 0;
+      const grid = document.getElementById('scoresGrid');
+      grid.innerHTML = players.map(p => {
+        const pal = getPlayerPalette(p.id);
+        const active = !gameEnded && turn === p.id;
+        return `
+          <div class="card p-card" style="border-color:${active ? pal.stroke : 'transparent'};">
+            <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
+            <div class="p-score" style="color:${pal.stroke};">${p.score || 0}</div>
+          </div>
+        `;
+      }).join('');
+
       document.getElementById('dimInfo').textContent = `${rows} × ${cols} বক্স`;
-      document.getElementById('p1Box').classList.toggle('active', !gameEnded && turn === 1);
-      document.getElementById('p2Box').classList.toggle('active', !gameEnded && turn === 2);
 
       const badge = document.getElementById('turnBadge');
+      const activePlayer = getPlayerById(turn);
       if (gameEnded) badge.textContent = 'খেলা শেষ';
+      else if (mode === 'local') badge.textContent = `${activePlayer ? activePlayer.name : 'প্লেয়ার'}-এর চাল`;
       else if ((mode === 'ai' && turn === 1) || (mode === 'online' && turn === myRole)) badge.textContent = 'আপনার চাল';
       else badge.textContent = mode === 'ai' ? 'কম্পিউটার চাল দিচ্ছে...' : 'প্রতিপক্ষের চাল';
     }

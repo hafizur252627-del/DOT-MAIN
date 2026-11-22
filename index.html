@@ -8,27 +8,47 @@
     * {
       box-sizing: border-box;
     }
+    :root {
+      --bg-color: #090d16;
+      --bg-image: none;
+      --card-bg: rgba(17, 24, 39, 0.9);
+      --card-border: rgba(148, 163, 184, 0.22);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --surface-bg: rgba(11, 17, 32, 0.88);
+      --btn-bg: rgba(30, 41, 59, 0.92);
+      --btn-border: rgba(148, 163, 184, 0.3);
+    }
+    body.day {
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: rgba(15, 23, 42, 0.16);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --surface-bg: rgba(248, 250, 252, 0.92);
+      --btn-bg: rgba(255, 255, 255, 0.94);
+      --btn-border: rgba(15, 23, 42, 0.22);
+    }
     body {
       margin: 0;
       min-height: 100vh;
       font-family: 'Hind Siliguri', 'Segoe UI', Arial, sans-serif;
-      background: #090d16;
-      color: #f8fafc;
+      background-color: var(--bg-color);
+      background-image: var(--bg-image);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text-main);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
       padding: 16px;
       user-select: none;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
-    body.day {
-      background: #f1f5f9;
-      color: #0f172a;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
     .wrap {
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       margin: auto 0;
     }
     .top-bar {
@@ -37,6 +57,7 @@
       justify-content: space-between;
       gap: 8px;
       margin-bottom: 14px;
+      flex-wrap: wrap;
     }
     .title {
       font-size: 20px;
@@ -45,43 +66,32 @@
     }
     .sub {
       font-size: 12px;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin-top: 2px;
-    }
-    body.day .sub {
-      color: #475569;
     }
     .purple { color: #a855f7; font-weight: 700; }
     .yellow { color: #eab308; font-weight: 700; }
 
     .btn {
-      border: 1px solid #334155;
-      background: #1e293b;
-      color: #f8fafc;
+      border: 1px solid var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--text-main);
       border-radius: 10px;
       padding: 8px 12px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
+      backdrop-filter: blur(8px);
     }
     .btn:hover { opacity: 0.92; }
-    body.day .btn {
-      background: #ffffff;
-      color: #0f172a;
-      border-color: #cbd5e1;
-    }
 
     .card {
-      background: #111827;
-      border: 1px solid #1f2937;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 20px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-    }
-    body.day .card {
-      background: #ffffff;
-      border-color: #cbd5e1;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(12px);
     }
 
     label {
@@ -89,68 +99,52 @@
       font-size: 13px;
       font-weight: 700;
       margin-bottom: 6px;
-      color: #cbd5e1;
+      color: var(--text-main);
     }
-    body.day label { color: #334155; }
 
     input[type="text"],
     input[type="number"] {
       width: 100%;
       padding: 10px 12px;
       border-radius: 10px;
-      border: 1px solid #374151;
-      background: #0b1120;
-      color: #ffffff;
+      border: 1px solid var(--btn-border);
+      background: var(--surface-bg);
+      color: var(--text-main);
       font-size: 14px;
       margin-bottom: 14px;
-    }
-    body.day input[type="text"],
-    body.day input[type="number"] {
-      background: #f8fafc;
-      color: #0f172a;
-      border-color: #cbd5e1;
     }
 
     .tabs {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
-      background: #0b1120;
+      background: var(--surface-bg);
       padding: 5px;
       border-radius: 12px;
-      border: 1px solid #1f2937;
+      border: 1px solid var(--card-border);
       margin-bottom: 16px;
-    }
-    body.day .tabs {
-      background: #e2e8f0;
-      border-color: #cbd5e1;
     }
     .tab-btn {
       border: 0;
       background: transparent;
-      color: #94a3b8;
+      color: var(--text-muted);
       padding: 8px 6px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
     }
-    body.day .tab-btn { color: #475569; }
     .tab-btn.active {
       background: #a855f7;
       color: #ffffff;
     }
 
-    .grid-box {
-      background: #0b1120;
-      border: 1px solid #1f2937;
+    .panel-box {
+      background: var(--surface-bg);
+      border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 12px;
-      margin-bottom: 16px;
-    }
-    body.day .grid-box {
-      background: #f8fafc;
-      border-color: #cbd5e1;
+      margin-bottom: 14px;
     }
     .presets {
       display: grid;
@@ -161,17 +155,12 @@
     .preset-btn {
       padding: 6px;
       border-radius: 8px;
-      border: 1px solid #334155;
-      background: #1e293b;
-      color: #f8fafc;
+      border: 1px solid var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--text-main);
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-    }
-    body.day .preset-btn {
-      background: #ffffff;
-      color: #0f172a;
-      border-color: #cbd5e1;
     }
 
     .slider-row {
@@ -181,13 +170,48 @@
       display: flex;
       justify-content: space-between;
       font-size: 12px;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin-bottom: 4px;
     }
-    body.day .slider-top { color: #475569; }
     input[type="range"] {
       width: 100%;
       accent-color: #a855f7;
+      cursor: pointer;
+    }
+
+    .bg-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .color-pick-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    input[type="color"] {
+      width: 38px;
+      height: 30px;
+      border: 1px solid var(--btn-border);
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+    .file-label {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
     }
 
@@ -196,15 +220,6 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      background: #0b1120;
-      border: 1px solid #1f2937;
-      border-radius: 12px;
-      padding: 10px 12px;
-      margin-bottom: 16px;
-    }
-    body.day .timer-row {
-      background: #f8fafc;
-      border-color: #cbd5e1;
     }
     .timer-row input[type="number"] {
       width: 90px;
@@ -242,21 +257,16 @@
     .ai-lvl {
       padding: 8px;
       border-radius: 10px;
-      border: 1px solid #334155;
-      background: #0b1120;
-      color: #cbd5e1;
+      border: 1px solid var(--btn-border);
+      background: var(--surface-bg);
+      color: var(--text-main);
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
     }
-    body.day .ai-lvl {
-      background: #f8fafc;
-      color: #334155;
-      border-color: #cbd5e1;
-    }
     .ai-lvl.active {
       border-color: #eab308;
-      background: rgba(234, 179, 8, 0.2);
+      background: rgba(234, 179, 8, 0.22);
       color: #eab308;
     }
 
@@ -264,7 +274,7 @@
       margin-top: 12px;
       padding: 10px;
       border-radius: 10px;
-      background: rgba(244, 63, 94, 0.15);
+      background: rgba(244, 63, 94, 0.16);
       border: 1px solid rgba(244, 63, 94, 0.35);
       color: #fda4af;
       font-size: 12px;
@@ -316,8 +326,8 @@
       border-radius: 999px;
       font-size: 12px;
       font-weight: 800;
-      background: rgba(168, 85, 247, 0.18);
-      color: #d8b4fe;
+      background: rgba(168, 85, 247, 0.2);
+      color: #e9d5ff;
       text-align: center;
     }
     body.day .turn-pill { color: #6b21a8; }
@@ -328,16 +338,13 @@
       border-radius: 999px;
       font-size: 12px;
       font-weight: 800;
-      background: rgba(234, 179, 8, 0.18);
-      color: #fde047;
+      background: rgba(234, 179, 8, 0.22);
+      color: #fef08a;
       text-align: center;
     }
-    body.day .clock-pill {
-      background: rgba(234, 179, 8, 0.25);
-      color: #854d0e;
-    }
+    body.day .clock-pill { color: #854d0e; }
     .clock-pill.danger {
-      background: rgba(244, 63, 94, 0.25);
+      background: rgba(244, 63, 94, 0.26);
       color: #fda4af;
     }
 
@@ -363,6 +370,7 @@
       font-weight: 800;
       min-height: 22px;
       color: #eab308;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
     }
 
     .made-by {
@@ -372,10 +380,7 @@
       font-size: 12px;
       font-weight: 800;
       letter-spacing: 1.5px;
-      color: #94a3b8;
-    }
-    body.day .made-by {
-      color: #475569;
+      color: var(--text-muted);
     }
 
     .toast {
@@ -402,7 +407,7 @@
     <div class="top-bar">
       <div>
         <h1 class="title">ডট গেম (Dots &amp; Boxes)</h1>
-        <div class="sub">প্লেয়ার: <span class="purple">বেগুনী</span> • কম্পিউটার: <span class="yellow">হলুদ</span></div>
+        <div class="sub">আপনি: <span class="purple">বেগুনী</span> • কম্পিউটার: <span class="yellow">হলুদ</span></div>
       </div>
       <div style="display:flex;gap:8px;">
         <button id="themeBtn" type="button" class="btn" onclick="toggleTheme()">☀️ Day</button>
@@ -412,16 +417,30 @@
 
     <!-- LOBBY -->
     <div id="lobbyView" class="card">
-      <label for="nameInput">প্লেয়ারের নাম</label>
+      <label for="nameInput">আপনার নাম</label>
       <input id="nameInput" type="text" maxlength="16" placeholder="যেমন: লাবিব" />
 
       <div class="tabs">
         <button id="tCreate" type="button" class="tab-btn active" onclick="setTab('create')">➕ রুম তৈরি</button>
-        <button id="tJoin" type="button" class="tab-btn" onclick="setTab('join')">🔗 রুমে যোগদান</button>
+        <button id="tJoin" type="button" class="tab-btn" onclick="setTab('join')">🔗 রুম যোগদান</button>
         <button id="tAi" type="button" class="tab-btn" onclick="setTab('ai')">🤖 কম্পিউটার</button>
       </div>
 
-      <div id="gridPanel" class="grid-box">
+      <!-- Custom Background Color & Image -->
+      <div class="panel-box">
+        <div style="font-size:12px;font-weight:800;margin-bottom:6px;">পেইজের ব্যাকগ্রাউন্ড (কালার বা ছবি)</div>
+        <div class="bg-controls">
+          <div class="color-pick-wrap">
+            <span>কালার:</span>
+            <input id="bgColorPicker" type="color" value="#090d16" oninput="applyCustomColor(this.value)" />
+          </div>
+          <label class="file-label" for="bgImageInput">🖼️ ছবি যুক্ত করুন</label>
+          <input id="bgImageInput" type="file" accept="image/*" style="display:none;" onchange="applyCustomImage(event)" />
+          <button type="button" class="preset-btn" onclick="resetBackground()">রিসেট</button>
+        </div>
+      </div>
+
+      <div id="gridPanel" class="panel-box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <span style="font-size:12px;font-weight:700;">বোর্ডের সাইজ</span>
           <span id="gridSummary" style="font-size:12px;font-weight:800;color:#a855f7;">৪ × ৪ বক্স</span>
@@ -442,17 +461,17 @@
         </div>
       </div>
 
-      <div id="timerPanel" class="timer-row">
+      <div id="timerPanel" class="panel-box timer-row">
         <div>
           <div style="font-size:12px;font-weight:800;">প্রতি চালের টাইমার (সেকেন্ড)</div>
-          <div style="font-size:11px;color:#94a3b8;">নির্ধারিত সময়ে চাল না দিলে স্বয়ংক্রিয় চাল হবে</div>
+          <div style="font-size:11px;color:var(--text-muted);">সময় শেষ হলে অটোমেটিক চাল দেওয়া হবে</div>
         </div>
-        <input id="timerInput" type="number" min="5" max="120" value="15" />
+        <input id="timerInput" type="number" min="3" max="300" value="15" />
       </div>
 
       <div id="pCreate">
         <button type="button" class="primary-btn" onclick="createRoom()">নতুন রুম তৈরি করুন</button>
-        <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:8px;">৫-সংখ্যার কোড তৈরি করে বন্ধুর সাথে শেয়ার করুন।</div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px;">৫-সংখ্যার কোড তৈরি করে বন্ধুর সাথে শেয়ার করুন।</div>
       </div>
 
       <div id="pJoin" style="display:none;">
@@ -481,7 +500,7 @@
           রুম কোড: <strong id="roomCodeText" style="color:#eab308;letter-spacing:2px;">-----</strong>
           <button type="button" class="btn" style="padding:4px 8px;font-size:11px;margin-left:6px;" onclick="copyCode()">কপি</button>
         </div>
-        <div id="roomStatusText" style="color:#94a3b8;">অপেক্ষা করা হচ্ছে...</div>
+        <div id="roomStatusText" style="color:var(--text-muted);">অপেক্ষা করা হচ্ছে...</div>
       </div>
 
       <div class="scores">
@@ -492,7 +511,7 @@
         <div>
           <div id="turnBadge" class="turn-pill">আপনার চাল</div>
           <div id="clockBadge" class="clock-pill">⏱️ 15s</div>
-          <div id="dimInfo" style="font-size:11px;color:#94a3b8;text-align:center;margin-top:3px;">৪ × ৪ বক্স</div>
+          <div id="dimInfo" style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:3px;">৪ × ৪ বক্স</div>
         </div>
         <div id="p2Box" class="card p-card p2">
           <div id="p2Title" style="font-size:12px;font-weight:700;">কম্পিউটার</div>
@@ -501,19 +520,19 @@
       </div>
 
       <div class="card" style="padding:12px;">
-        <canvas id="board" width="440" height="440"></canvas>
+        <canvas id="board" width="460" height="460"></canvas>
       </div>
 
       <div id="resultText" class="result-box"></div>
 
       <div class="footer-btns">
-        <button type="button" class="btn" onclick="backLobby()">← মেনু</button>
+        <button type="button" class="btn" onclick="backLobby()">← লবি</button>
         <button type="button" class="btn" onclick="restartMatch()">🔄 আবার খেলুন</button>
       </div>
     </div>
   </div>
 
-  <footer class="made-by">MADE BY LABIB AL AHSAN</footer>
+  <footer class="made-by">MADE BY LABIB</footer>
 
   <div id="toast" class="toast">কপি করা হয়েছে!</div>
 
@@ -542,9 +561,9 @@
 
   <script>
     const PURPLE = '#a855f7';
-    const PURPLE_FILL = 'rgba(168, 85, 247, 0.25)';
+    const PURPLE_FILL = 'rgba(168, 85, 247, 0.28)';
     const YELLOW = '#eab308';
-    const YELLOW_FILL = 'rgba(234, 179, 8, 0.25)';
+    const YELLOW_FILL = 'rgba(234, 179, 8, 0.28)';
 
     let isDay = false;
     let soundOn = true;
@@ -563,17 +582,15 @@
     let boxes = {};
     let turn = 1;
     let scores = { 1: 0, 2: 0 };
-    let p1Name = 'প্লেয়ার';
+    let p1Name = 'আপনি';
     let p2Name = 'কম্পিউটার';
     let gameEnded = false;
     let metrics = { pad: 34, cell: 56 };
 
-    // Timer state
     let customTurnSeconds = 15;
     let timeLeft = 15;
 
-    // Bounce/step animation state for newly drawn line
-    let lastEdge = null; // { type, r, c }
+    let lastEdge = null;
     let edgeAnimStart = 0;
     let animFrameId = null;
 
@@ -598,10 +615,38 @@
       setTimeout(() => t.classList.remove('show'), 1800);
     }
 
+    function applyCustomColor(hex) {
+      document.documentElement.style.setProperty('--bg-color', hex);
+    }
+
+    function applyCustomImage(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        document.documentElement.style.setProperty('--bg-image', `url("${e.target.result}")`);
+        showToast('ব্যাকগ্রাউন্ড ছবি যুক্ত হয়েছে!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetBackground() {
+      document.documentElement.style.setProperty('--bg-image', 'none');
+      document.documentElement.style.setProperty('--bg-color', isDay ? '#e2e8f0' : '#090d16');
+      document.getElementById('bgColorPicker').value = isDay ? '#e2e8f0' : '#090d16';
+      document.getElementById('bgImageInput').value = '';
+      showToast('ব্যাকগ্রাউন্ড রিসেট হয়েছে!');
+    }
+
     function toggleTheme() {
       isDay = !isDay;
       document.body.classList.toggle('day', isDay);
       document.getElementById('themeBtn').textContent = isDay ? '🌙 Night' : '☀️ Day';
+      if (getComputedStyle(document.documentElement).getPropertyValue('--bg-image').trim() === 'none') {
+        const nextBg = isDay ? '#e2e8f0' : '#090d16';
+        document.documentElement.style.setProperty('--bg-color', nextBg);
+        document.getElementById('bgColorPicker').value = nextBg;
+      }
       drawBoard();
     }
 
@@ -692,7 +737,7 @@
 
         if (timeLeft <= 0) {
           clearInterval(countdownInterval);
-          handleTimeExpired();
+          shiftTurnOnTimeout();
         }
       }, 1000);
     }
@@ -704,21 +749,21 @@
       el.classList.toggle('danger', timeLeft <= 3 && !gameEnded);
     }
 
-    function handleTimeExpired() {
+    async function shiftTurnOnTimeout() {
       if (gameEnded) return;
-      // Pick a move automatically when time runs out for active human turn
+      const moves = getAllAvailableMoves();
+      if (!moves.length) return;
+
       if (mode === 'ai' && turn === 1) {
-        const moves = getAllAvailableMoves();
-        if (moves.length) {
-          const pick = moves[Math.floor(Math.random() * moves.length)];
-          doMove(pick.type, pick.r, pick.c, 1);
-        }
+        const pick = moves[Math.floor(Math.random() * moves.length)];
+        showToast('সময় শেষ! অটোমেটিক চাল দেওয়া হয়েছে।');
+        await doMove(pick.type, pick.r, pick.c, 1);
       } else if (mode === 'online' && turn === myRole) {
-        const moves = getAllAvailableMoves();
-        if (moves.length) {
-          const pick = moves[Math.floor(Math.random() * moves.length)];
-          doMove(pick.type, pick.r, pick.c, myRole);
-        }
+        const pick = moves[Math.floor(Math.random() * moves.length)];
+        showToast('সময় শেষ! অটোমেটিক চাল দেওয়া হয়েছে।');
+        await doMove(pick.type, pick.r, pick.c, myRole);
+      } else {
+        resetTurnClock();
       }
     }
 
@@ -761,7 +806,7 @@
       mode = 'ai';
       myRole = 1;
       roomId = null;
-      p1Name = getName('প্লেয়ার');
+      p1Name = getName('আপনি');
       p2Name = aiLevel === 'hard' ? 'কম্পিউটার (কঠিন)' : aiLevel === 'medium' ? 'কম্পিউটার (মাঝারি)' : 'কম্পিউটার (সহজ)';
       resetState(rows, cols);
       openGameView();
@@ -1012,7 +1057,6 @@
       if (aiLevel === 'easy') {
         chosen = moves[Math.floor(Math.random() * moves.length)];
       } else {
-        // 1. Always capture boxes if available (prefer moves that capture most boxes)
         let bestCapture = null;
         let maxCaps = 0;
         for (const m of moves) {
@@ -1025,33 +1069,30 @@
         if (bestCapture) {
           chosen = bestCapture;
         } else {
-          // 2. Avoid creating 3-sided boxes that hand easy boxes to opponent
           const currentThrees = countThreeSidedBoxes(hEdges, vEdges);
-          const nonTrapMoves = [];
+          const safeMoves = [];
           for (const m of moves) {
             const { th, tv } = countBoxesCompletedByMove(m, hEdges, vEdges);
             const nextThrees = countThreeSidedBoxes(th, tv);
             if (nextThrees <= currentThrees) {
-              nonTrapMoves.push({ move: m, nextThrees });
+              safeMoves.push(m);
             }
           }
 
-          if (nonTrapMoves.length > 0) {
-            // In hard mode, prefer center/connected safe edges to build chains
+          if (safeMoves.length > 0) {
             if (aiLevel === 'hard') {
               const centerR = rows / 2;
               const centerC = cols / 2;
-              nonTrapMoves.sort((a, b) => {
-                const da = Math.hypot(a.move.r - centerR, a.move.c - centerC);
-                const db = Math.hypot(b.move.r - centerR, b.move.c - centerC);
+              safeMoves.sort((a, b) => {
+                const da = Math.hypot(a.r - centerR, a.c - centerC);
+                const db = Math.hypot(b.r - centerR, b.c - centerC);
                 return da - db;
               });
-              chosen = nonTrapMoves[0].move;
+              chosen = safeMoves[0];
             } else {
-              chosen = nonTrapMoves[Math.floor(Math.random() * nonTrapMoves.length)].move;
+              chosen = safeMoves[Math.floor(Math.random() * safeMoves.length)];
             }
           } else {
-            // Forced trap: pick move creating the fewest 3-sided boxes
             moves.sort((a, b) => {
               const sa = countBoxesCompletedByMove(a, hEdges, vEdges);
               const sb = countBoxesCompletedByMove(b, hEdges, vEdges);
@@ -1066,18 +1107,19 @@
     }
 
     function drawBoard(now = performance.now()) {
+      const dpr = Math.min(window.devicePixelRatio || 1, 3);
       const maxDim = Math.max(rows, cols);
-      const pad = 32;
-      const cell = Math.min(62, Math.floor(380 / maxDim));
-      const w = pad * 2 + cols * cell;
-      const h = pad * 2 + rows * cell;
+      const pad = 34;
+      const cell = Math.min(64, Math.floor(390 / maxDim));
+      const logicalW = pad * 2 + cols * cell;
+      const logicalH = pad * 2 + rows * cell;
       metrics = { pad, cell };
 
-      canvas.width = w;
-      canvas.height = h;
-      ctx.clearRect(0, 0, w, h);
+      canvas.width = logicalW * dpr;
+      canvas.height = logicalH * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, logicalW, logicalH);
 
-      // Draw claimed boxes with player's name
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const owner = boxes[`${r},${c}`];
@@ -1090,7 +1132,7 @@
 
             const displayName = owner === 1 ? p1Name : p2Name;
             const shortName = displayName.length > 7 ? displayName.slice(0, 6) + '…' : displayName;
-            ctx.fillStyle = isDay ? (owner === 1 ? '#6b21a8' : '#854d0e') : (owner === 1 ? '#e9d5ff' : '#fef08a');
+            ctx.fillStyle = isDay ? (owner === 1 ? '#581c87' : '#713f12') : (owner === 1 ? '#f3e8ff' : '#fef9c3');
             ctx.font = `800 ${Math.max(11, Math.min(14, Math.floor(sz * 0.28)))}px 'Hind Siliguri', Arial, sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -1099,18 +1141,16 @@
         }
       }
 
-      const emptyStroke = isDay ? 'rgba(15, 23, 42, 0.22)' : 'rgba(148, 163, 184, 0.25)';
+      const emptyStroke = isDay ? 'rgba(15, 23, 42, 0.34)' : 'rgba(203, 213, 225, 0.34)';
 
       const getStepOffset = (type, r, c) => {
         if (!lastEdge || lastEdge.type !== type || lastEdge.r !== r || lastEdge.c !== c) return 0;
         const elapsed = now - edgeAnimStart;
         if (elapsed < 0 || elapsed > 340) return 0;
         const progress = elapsed / 340;
-        // Light hop/bounce curve: goes up then settles smoothly
         return -Math.sin(progress * Math.PI) * 5 * (1 - progress * 0.5);
       };
 
-      // Horizontal lines
       for (let r = 0; r <= rows; r++) {
         for (let c = 0; c < cols; c++) {
           const owner = hEdges[`${r},${c}`];
@@ -1120,12 +1160,11 @@
           ctx.lineTo(pad + (c + 1) * cell, pad + r * cell + hopY);
           ctx.lineCap = 'round';
           ctx.strokeStyle = owner ? (owner === 1 ? PURPLE : YELLOW) : emptyStroke;
-          ctx.lineWidth = owner ? (hopY !== 0 ? 7.5 : 6) : 3;
+          ctx.lineWidth = owner ? (hopY !== 0 ? 8 : 6.5) : 3.5;
           ctx.stroke();
         }
       }
 
-      // Vertical lines
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c <= cols; c++) {
           const owner = vEdges[`${r},${c}`];
@@ -1135,16 +1174,15 @@
           ctx.lineTo(pad + c * cell + hopX, pad + (r + 1) * cell);
           ctx.lineCap = 'round';
           ctx.strokeStyle = owner ? (owner === 1 ? PURPLE : YELLOW) : emptyStroke;
-          ctx.lineWidth = owner ? (hopX !== 0 ? 7.5 : 6) : 3;
+          ctx.lineWidth = owner ? (hopX !== 0 ? 8 : 6.5) : 3.5;
           ctx.stroke();
         }
       }
 
-      // Dots
       for (let r = 0; r <= rows; r++) {
         for (let c = 0; c <= cols; c++) {
           ctx.beginPath();
-          ctx.arc(pad + c * cell, pad + r * cell, 5.5, 0, Math.PI * 2);
+          ctx.arc(pad + c * cell, pad + r * cell, 6, 0, Math.PI * 2);
           ctx.fillStyle = isDay ? '#0f172a' : '#ffffff';
           ctx.fill();
         }
@@ -1164,9 +1202,14 @@
       if (mode === 'online' && turn !== myRole) return;
 
       const rect = canvas.getBoundingClientRect();
-      const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-      const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-      const { pad, cell } = metrics;
+      const maxDim = Math.max(rows, cols);
+      const pad = 34;
+      const cell = Math.min(64, Math.floor(390 / maxDim));
+      const logicalW = pad * 2 + cols * cell;
+      const logicalH = pad * 2 + rows * cell;
+
+      const x = (e.clientX - rect.left) * (logicalW / rect.width);
+      const y = (e.clientY - rect.top) * (logicalH / rect.height);
 
       let best = null;
       let minD = 16;

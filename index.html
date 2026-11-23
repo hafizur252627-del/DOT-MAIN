@@ -4,47 +4,55 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ডট গেম (Dots & Boxes)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
   <style>
     * {
       box-sizing: border-box;
     }
     :root {
-      --bg-color: #090d16;
+      --bg-color: #070b14;
       --bg-image: none;
-      --card-bg: rgba(17, 24, 39, 0.92);
-      --card-border: rgba(148, 163, 184, 0.22);
+      --card-bg: rgba(15, 23, 42, 0.84);
+      --card-border: rgba(148, 163, 184, 0.18);
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --surface-bg: rgba(11, 17, 32, 0.88);
-      --btn-bg: rgba(30, 41, 59, 0.92);
-      --btn-border: rgba(148, 163, 184, 0.3);
+      --surface-bg: rgba(9, 14, 26, 0.72);
+      --btn-bg: rgba(30, 41, 59, 0.78);
+      --btn-border: rgba(148, 163, 184, 0.24);
+      --accent-purple: #a855f7;
+      --accent-yellow: #eab308;
     }
     body.day {
-      --card-bg: rgba(255, 255, 255, 0.92);
-      --card-border: rgba(15, 23, 42, 0.16);
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-border: rgba(15, 23, 42, 0.12);
       --text-main: #0f172a;
       --text-muted: #475569;
-      --surface-bg: rgba(248, 250, 252, 0.92);
-      --btn-bg: rgba(255, 255, 255, 0.94);
-      --btn-border: rgba(15, 23, 42, 0.22);
+      --surface-bg: rgba(241, 245, 249, 0.85);
+      --btn-bg: rgba(255, 255, 255, 0.9);
+      --btn-border: rgba(15, 23, 42, 0.16);
     }
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: 'Hind Siliguri', 'Segoe UI', Arial, sans-serif;
+      font-family: 'Plus Jakarta Sans', 'Hind Siliguri', 'Segoe UI', Arial, sans-serif;
       background-color: var(--bg-color);
-      background-image: var(--bg-image);
-      background-size: cover;
-      background-position: center;
+      background-image:
+        radial-gradient(circle at 18% 12%, rgba(168, 85, 247, 0.16), transparent 42%),
+        radial-gradient(circle at 86% 88%, rgba(234, 179, 8, 0.11), transparent 45%),
+        var(--bg-image);
+      background-size: cover, cover, cover;
+      background-position: center, center, center;
       background-attachment: fixed;
       color: var(--text-main);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 16px;
+      padding: 20px 16px;
       user-select: none;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
     .wrap {
       width: 100%;
@@ -55,35 +63,48 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 16px;
       flex-wrap: wrap;
+      padding: 4px 2px;
     }
     .title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 800;
       margin: 0;
+      letter-spacing: -0.02em;
     }
     .sub {
-      font-size: 12px;
+      font-size: 12.5px;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 3px;
+      font-weight: 600;
     }
-    .purple { color: #a855f7; font-weight: 700; }
-    .yellow { color: #eab308; font-weight: 700; }
+    .purple { color: #c084fc; font-weight: 700; }
+    .yellow { color: #facc15; font-weight: 700; }
+    body.day .purple { color: #7e22ce; }
+    body.day .yellow { color: #a16207; }
 
     .btn {
       border: 1px solid var(--btn-border);
       background: var(--btn-bg);
       color: var(--text-main);
-      border-radius: 10px;
-      padding: 8px 12px;
+      border-radius: 11px;
+      padding: 8px 13px;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+      transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
     }
-    .btn:hover { opacity: 0.92; }
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(168, 85, 247, 0.5);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
     .btn.paused-state {
       border-color: #eab308;
       background: rgba(234, 179, 8, 0.22);
@@ -96,30 +117,40 @@
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
-      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
     }
 
     label {
       display: block;
       font-size: 13px;
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 7px;
       color: var(--text-main);
+      letter-spacing: 0.01em;
     }
 
     input[type="text"],
     input[type="number"] {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 10px;
+      padding: 11px 14px;
+      border-radius: 12px;
       border: 1px solid var(--btn-border);
       background: var(--surface-bg);
       color: var(--text-main);
       font-size: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #a855f7;
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
     }
 
     .tabs {
@@ -127,8 +158,8 @@
       grid-template-columns: repeat(4, 1fr);
       gap: 6px;
       background: var(--surface-bg);
-      padding: 5px;
-      border-radius: 12px;
+      padding: 6px;
+      border-radius: 14px;
       border: 1px solid var(--card-border);
       margin-bottom: 16px;
     }
@@ -136,59 +167,76 @@
       border: 0;
       background: transparent;
       color: var(--text-muted);
-      padding: 8px 4px;
-      border-radius: 8px;
+      padding: 9px 6px;
+      border-radius: 10px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .tab-btn:hover {
+      color: var(--text-main);
     }
     .tab-btn.active {
-      background: #a855f7;
+      background: linear-gradient(135deg, #a855f7, #7e22ce);
       color: #ffffff;
+      box-shadow: 0 6px 16px rgba(126, 34, 206, 0.4);
     }
 
     .panel-box {
       background: var(--surface-bg);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px;
+      border-radius: 14px;
+      padding: 14px;
       margin-bottom: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     .presets {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      margin-bottom: 10px;
+      gap: 7px;
+      margin-bottom: 12px;
     }
     .preset-btn {
-      padding: 6px;
-      border-radius: 8px;
+      padding: 7px 6px;
+      border-radius: 9px;
       border: 1px solid var(--btn-border);
       background: var(--btn-bg);
       color: var(--text-main);
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .preset-btn:hover {
+      border-color: rgba(168, 85, 247, 0.55);
+      transform: translateY(-1px);
     }
     .preset-btn.active {
       border-color: #a855f7;
       background: rgba(168, 85, 247, 0.25);
+      color: #e9d5ff;
+    }
+    body.day .preset-btn.active {
+      color: #581c87;
     }
 
     .slider-row {
-      margin-top: 8px;
+      margin-top: 10px;
     }
     .slider-top {
       display: flex;
       justify-content: space-between;
       font-size: 12px;
       color: var(--text-muted);
-      margin-bottom: 4px;
+      margin-bottom: 5px;
+      font-weight: 600;
     }
     input[type="range"] {
       width: 100%;
       accent-color: #a855f7;
       cursor: pointer;
+      height: 6px;
     }
 
     .bg-controls {
@@ -197,12 +245,12 @@
       justify-content: space-between;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 6px;
+      margin-top: 8px;
     }
     .color-pick-wrap {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       font-size: 12px;
       font-weight: 700;
     }
@@ -217,14 +265,19 @@
     }
     .file-label {
       display: inline-block;
-      padding: 6px 10px;
-      border-radius: 8px;
+      padding: 7px 11px;
+      border-radius: 9px;
       border: 1px solid var(--btn-border);
       background: var(--btn-bg);
       color: var(--text-main);
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+    .file-label:hover {
+      border-color: rgba(168, 85, 247, 0.5);
+      transform: translateY(-1px);
     }
 
     .timer-row {
@@ -234,9 +287,9 @@
       gap: 10px;
     }
     .timer-row input[type="number"] {
-      width: 90px;
+      width: 92px;
       margin-bottom: 0;
-      padding: 7px 10px;
+      padding: 8px 10px;
       text-align: center;
       font-weight: 800;
     }
@@ -244,20 +297,32 @@
     .primary-btn {
       width: 100%;
       border: 0;
-      border-radius: 12px;
-      padding: 12px;
+      border-radius: 13px;
+      padding: 13px 16px;
       font-size: 15px;
       font-weight: 800;
       color: #ffffff;
-      background: linear-gradient(90deg, #a855f7, #7c3aed);
+      background: linear-gradient(135deg, #a855f7, #7c3aed);
       cursor: pointer;
+      box-shadow: 0 10px 24px rgba(124, 58, 237, 0.36);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+      box-shadow: 0 14px 28px rgba(124, 58, 237, 0.45);
+    }
+    .primary-btn:active {
+      transform: translateY(0);
     }
     .primary-btn.ai-btn {
-      background: linear-gradient(90deg, #a855f7, #eab308);
+      background: linear-gradient(135deg, #a855f7, #eab308);
       color: #090d16;
+      box-shadow: 0 10px 24px rgba(234, 179, 8, 0.25);
     }
     .primary-btn.join-btn {
-      background: linear-gradient(90deg, #10b981, #0d9488);
+      background: linear-gradient(135deg, #10b981, #0d9488);
+      box-shadow: 0 10px 24px rgba(16, 185, 129, 0.28);
     }
 
     .ai-row {
@@ -267,19 +332,23 @@
       margin-bottom: 14px;
     }
     .ai-lvl {
-      padding: 8px;
-      border-radius: 10px;
+      padding: 9px;
+      border-radius: 11px;
       border: 1px solid var(--btn-border);
       background: var(--surface-bg);
       color: var(--text-main);
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
+      transition: all 0.15s ease;
     }
     .ai-lvl.active {
       border-color: #eab308;
-      background: rgba(234, 179, 8, 0.22);
-      color: #eab308;
+      background: rgba(234, 179, 8, 0.2);
+      color: #facc15;
+    }
+    body.day .ai-lvl.active {
+      color: #854d0e;
     }
 
     .err-msg {
@@ -303,8 +372,8 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 8px;
-      padding: 10px 12px;
-      border-radius: 12px;
+      padding: 11px 14px;
+      border-radius: 14px;
       margin-bottom: 10px;
       font-size: 12px;
     }
@@ -316,15 +385,15 @@
       margin-bottom: 10px;
     }
     .p-card {
-      padding: 9px 11px;
-      border-radius: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
       border: 2px solid transparent;
     }
     .p-score {
-      font-size: 22px;
+      font-size: 23px;
       font-weight: 800;
       line-height: 1.1;
-      margin-top: 3px;
+      margin-top: 4px;
     }
 
     .status-strip {
@@ -337,36 +406,39 @@
     }
 
     .turn-pill {
-      padding: 6px 12px;
+      padding: 6px 13px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 800;
-      background: rgba(168, 85, 247, 0.2);
+      background: rgba(168, 85, 247, 0.22);
       color: #e9d5ff;
       text-align: center;
+      border: 1px solid rgba(168, 85, 247, 0.35);
     }
     body.day .turn-pill { color: #6b21a8; }
 
     .clock-pill {
-      padding: 5px 11px;
+      padding: 5px 12px;
       border-radius: 999px;
       font-size: 12px;
       font-weight: 800;
-      background: rgba(234, 179, 8, 0.22);
+      background: rgba(234, 179, 8, 0.2);
       color: #fef08a;
       text-align: center;
+      border: 1px solid rgba(234, 179, 8, 0.32);
     }
     body.day .clock-pill { color: #854d0e; }
     .clock-pill.danger {
       background: rgba(244, 63, 94, 0.26);
       color: #fda4af;
+      border-color: rgba(244, 63, 94, 0.45);
     }
 
     canvas {
       width: 100%;
       height: auto;
       display: block;
-      border-radius: 12px;
+      border-radius: 14px;
       cursor: pointer;
     }
 
@@ -385,7 +457,7 @@
       inset: 0;
       z-index: 60;
       background: rgba(2, 6, 23, 0.78);
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
       padding: 16px;
@@ -398,11 +470,11 @@
       width: 100%;
       max-width: 410px;
       background: var(--card-bg);
-      border: 2px solid #a855f7;
-      border-radius: 20px;
+      border: 2px solid rgba(168, 85, 247, 0.85);
+      border-radius: 22px;
       padding: 24px 20px;
       text-align: center;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.52);
     }
     .congrats-title-line {
       font-size: 22px;
@@ -425,7 +497,7 @@
       margin-top: 12px;
       font-size: 12px;
       font-weight: 900;
-      letter-spacing: 1.8px;
+      letter-spacing: 2px;
       color: #f8fafc;
       text-align: center;
     }
@@ -436,7 +508,7 @@
       padding: 14px 8px 4px;
       font-size: 12px;
       font-weight: 800;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
       color: var(--text-muted);
     }
 
@@ -448,7 +520,7 @@
       background: #1e293b;
       color: #ffffff;
       border: 1px solid #475569;
-      padding: 8px 16px;
+      padding: 9px 18px;
       border-radius: 999px;
       font-size: 13px;
       font-weight: 700;
@@ -456,6 +528,7 @@
       pointer-events: none;
       transition: opacity 0.2s ease;
       z-index: 70;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
     }
     .toast.show { opacity: 1; }
   </style>
@@ -506,11 +579,11 @@
       <div id="gridPanel" class="panel-box">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
           <span style="font-size:12px;font-weight:700;">বোর্ডের সাইজ</span>
-          <span id="gridSummary" style="font-size:12px;font-weight:800;color:#a855f7;">৪ × ৪ বক্স</span>
+          <span id="gridSummary" style="font-size:12px;font-weight:800;color:#c084fc;">৪ × ৪ বক্স</span>
         </div>
         <div class="presets">
           <button type="button" class="preset-btn" onclick="setGrid(3,3)">৩×৩</button>
-          <button type="button" class="preset-btn" onclick="setGrid(4,4)">৪×৪</button>
+          <button type="button" class="preset-btn active" onclick="setGrid(4,4)">৪×৪</button>
           <button type="button" class="preset-btn" onclick="setGrid(5,5)">৫×৫</button>
           <button type="button" class="preset-btn" onclick="setGrid(7,7)">৭×৭</button>
         </div>
@@ -701,9 +774,9 @@
       document.documentElement.style.setProperty('--bg-color', hex);
     }
 
-    function hexToRgba(hex, alpha = 0.92) {
+    function hexToRgba(hex, alpha = 0.88) {
       const clean = hex.replace('#', '');
-      if (clean.length !== 6) return `rgba(17, 24, 39, ${alpha})`;
+      if (clean.length !== 6) return `rgba(15, 23, 42, ${alpha})`;
       const r = parseInt(clean.slice(0, 2), 16);
       const g = parseInt(clean.slice(2, 4), 16);
       const b = parseInt(clean.slice(4, 6), 16);
@@ -711,8 +784,8 @@
     }
 
     function applyOptionPageColor(hex) {
-      document.documentElement.style.setProperty('--card-bg', hexToRgba(hex, 0.93));
-      document.documentElement.style.setProperty('--surface-bg', hexToRgba(hex, 0.78));
+      document.documentElement.style.setProperty('--card-bg', hexToRgba(hex, 0.9));
+      document.documentElement.style.setProperty('--surface-bg', hexToRgba(hex, 0.74));
     }
 
     function applyCustomImage(event) {
@@ -728,10 +801,10 @@
 
     function resetBackground() {
       document.documentElement.style.setProperty('--bg-image', 'none');
-      const nextBg = isDay ? '#e2e8f0' : '#090d16';
-      const nextCard = isDay ? '#ffffff' : '#111827';
+      const nextBg = isDay ? '#e2e8f0' : '#070b14';
+      const nextCard = isDay ? '#ffffff' : '#0f172a';
       document.documentElement.style.setProperty('--bg-color', nextBg);
-      document.documentElement.style.setProperty('--card-bg', hexToRgba(nextCard, 0.92));
+      document.documentElement.style.setProperty('--card-bg', hexToRgba(nextCard, 0.88));
       document.documentElement.style.removeProperty('--surface-bg');
       document.getElementById('bgColorPicker').value = nextBg;
       document.getElementById('pageColorPicker').value = nextCard;
@@ -746,7 +819,7 @@
       document.documentElement.style.removeProperty('--card-bg');
       document.documentElement.style.removeProperty('--surface-bg');
       if (getComputedStyle(document.documentElement).getPropertyValue('--bg-image').trim() === 'none') {
-        const nextBg = isDay ? '#e2e8f0' : '#090d16';
+        const nextBg = isDay ? '#e2e8f0' : '#070b14';
         document.documentElement.style.setProperty('--bg-color', nextBg);
         document.getElementById('bgColorPicker').value = nextBg;
       }
@@ -811,6 +884,12 @@
       document.getElementById('rVal').textContent = rows;
       document.getElementById('cVal').textContent = cols;
       document.getElementById('gridSummary').textContent = `${rows} × ${cols} বক্স`;
+      document.querySelectorAll('#gridPanel .preset-btn').forEach(btn => {
+        const match = btn.textContent.trim().match(/^(\d+)×(\d+)$/);
+        if (match) {
+          btn.classList.toggle('active', parseInt(match[1], 10) === rows && parseInt(match[2], 10) === cols);
+        }
+      });
     }
 
     function setGrid(r, c) {
@@ -1176,26 +1255,6 @@
       return got;
     }
 
-    // Checks if a move is connected/adjacent to an existing edge so non-serial moves keep turn
-    function isConnectedToExistingEdge(type, r, c) {
-      const hasH = (hr, hc) => Boolean(hEdges[`${hr},${hc}`]);
-      const hasV = (vr, vc) => Boolean(vEdges[`${vr},${vc}`]);
-
-      if (type === 'h') {
-        return (
-          hasH(r, c - 1) || hasH(r, c + 1) ||
-          hasV(r - 1, c) || hasV(r, c) ||
-          hasV(r - 1, c + 1) || hasV(r, c + 1)
-        );
-      } else {
-        return (
-          hasV(r - 1, c) || hasV(r + 1, c) ||
-          hasH(r, c - 1) || hasH(r, c) ||
-          hasH(r + 1, c - 1) || hasH(r + 1, c)
-        );
-      }
-    }
-
     function triggerLineStepAnim(type, r, c) {
       lastEdge = { type, r, c };
       edgeAnimStart = performance.now();
@@ -1238,8 +1297,6 @@
       if (type === 'h' && hEdges[k]) return;
       if (type === 'v' && vEdges[k]) return;
 
-      const connected = isConnectedToExistingEdge(type, r, c);
-
       if (type === 'h') hEdges[k] = playerId;
       else vEdges[k] = playerId;
 
@@ -1253,8 +1310,8 @@
         clearInterval(countdownInterval);
         updateClockUI();
         showCongratulationModal();
-      } else if (got > 0 || !connected) {
-        // Keep turn when box captured OR when played non-serially (not connected to previous edges)
+      } else if (got > 0) {
+        // Bonus line only when completing a box; otherwise 1 line per turn
         resetTurnClock();
       } else {
         const idx = players.findIndex(p => p.id === playerId);
@@ -1325,7 +1382,6 @@
       return total;
     }
 
-    // Look ahead to see how many boxes opponent can capture immediately after AI's move
     function opponentImmediateCaptureCount(hMap, vMap) {
       const oppMoves = getAllAvailableMoves(hMap, vMap);
       let maxOppGain = 0;

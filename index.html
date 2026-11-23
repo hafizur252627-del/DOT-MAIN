@@ -202,13 +202,13 @@
     .color-pick-wrap {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-size: 12px;
       font-weight: 700;
     }
     input[type="color"] {
-      width: 38px;
-      height: 30px;
+      width: 36px;
+      height: 28px;
       border: 1px solid var(--btn-border);
       border-radius: 8px;
       background: transparent;
@@ -396,7 +396,7 @@
     }
     .congrats-card {
       width: 100%;
-      max-width: 390px;
+      max-width: 400px;
       background: var(--card-bg);
       border: 2px solid #a855f7;
       border-radius: 20px;
@@ -404,17 +404,12 @@
       text-align: center;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
     }
-    .congrats-heading {
-      font-size: 26px;
+    .congrats-title-line {
+      font-size: 22px;
       font-weight: 900;
       color: #eab308;
-      margin: 0 0 8px;
-    }
-    .winner-name-big {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--text-main);
-      margin: 6px 0 14px;
+      margin: 0 0 12px;
+      line-height: 1.4;
     }
     .modal-score-summary {
       font-size: 13px;
@@ -490,15 +485,19 @@
         <button id="tAi" type="button" class="tab-btn" onclick="setTab('ai')">🤖 কম্পিউটার</button>
       </div>
 
-      <!-- Custom Background Color & Image -->
+      <!-- Custom Background & Option Page Color -->
       <div class="panel-box">
-        <div style="font-size:12px;font-weight:800;margin-bottom:6px;">পেইজের ব্যাকগ্রাউন্ড (কালার বা ছবি)</div>
+        <div style="font-size:12px;font-weight:800;margin-bottom:6px;">পেইজ ও অপশন কালার / ব্যাকগ্রাউন্ড</div>
         <div class="bg-controls">
           <div class="color-pick-wrap">
-            <span>কালার:</span>
+            <span>BG:</span>
             <input id="bgColorPicker" type="color" value="#090d16" oninput="applyCustomColor(this.value)" />
           </div>
-          <label class="file-label" for="bgImageInput">🖼️ ছবি যুক্ত করুন</label>
+          <div class="color-pick-wrap">
+            <span>অপশন পেইজ:</span>
+            <input id="pageColorPicker" type="color" value="#111827" oninput="applyOptionPageColor(this.value)" />
+          </div>
+          <label class="file-label" for="bgImageInput">🖼️ ছবি</label>
           <input id="bgImageInput" type="file" accept="image/*" style="display:none;" onchange="applyCustomImage(event)" />
           <button type="button" class="preset-btn" onclick="resetBackground()">রিসেট</button>
         </div>
@@ -591,7 +590,7 @@
       </div>
 
       <div class="footer-btns">
-        <button type="button" class="btn" onclick="backLobby()">← মেনু</button>
+        <button type="button" class="btn" onclick="backLobby()">← লবি</button>
         <button id="pauseBtn" type="button" class="btn" onclick="togglePause()">⏸️ Pause</button>
         <button type="button" class="btn" onclick="restartMatch()">🔄 আবার খেলুন</button>
       </div>
@@ -601,12 +600,11 @@
   <!-- CONGRATULATION MODAL -->
   <div id="congratsModal" class="modal-backdrop">
     <div class="congrats-card">
-      <div style="font-size:42px;line-height:1;margin-bottom:6px;">🏆</div>
-      <h2 class="congrats-heading">অভিনন্দন</h2>
-      <div id="winnerNameDisplay" class="winner-name-big">জয়ী প্লেয়ার</div>
+      <div style="font-size:42px;line-height:1;margin-bottom:8px;">🏆</div>
+      <h2 id="winnerAnnouncement" class="congrats-title-line">অভিনন্দন প্লেয়ার জিতেছেন</h2>
       <div id="modalScoreSummary" class="modal-score-summary"></div>
       <div class="modal-actions">
-        <button type="button" class="btn" style="flex:1;" onclick="backLobby()">মেনু</button>
+        <button type="button" class="btn" style="flex:1;" onclick="backLobby()">লবি</button>
         <button type="button" class="primary-btn" style="flex:1;padding:10px;font-size:13px;" onclick="restartMatch()">আবার খেলুন</button>
       </div>
     </div>
@@ -703,6 +701,20 @@
       document.documentElement.style.setProperty('--bg-color', hex);
     }
 
+    function hexToRgba(hex, alpha = 0.92) {
+      const clean = hex.replace('#', '');
+      if (clean.length !== 6) return `rgba(17, 24, 39, ${alpha})`;
+      const r = parseInt(clean.slice(0, 2), 16);
+      const g = parseInt(clean.slice(2, 4), 16);
+      const b = parseInt(clean.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function applyOptionPageColor(hex) {
+      document.documentElement.style.setProperty('--card-bg', hexToRgba(hex, 0.93));
+      document.documentElement.style.setProperty('--surface-bg', hexToRgba(hex, 0.78));
+    }
+
     function applyCustomImage(event) {
       const file = event.target.files && event.target.files[0];
       if (!file) return;
@@ -717,16 +729,22 @@
     function resetBackground() {
       document.documentElement.style.setProperty('--bg-image', 'none');
       const nextBg = isDay ? '#e2e8f0' : '#090d16';
+      const nextCard = isDay ? '#ffffff' : '#111827';
       document.documentElement.style.setProperty('--bg-color', nextBg);
+      document.documentElement.style.setProperty('--card-bg', hexToRgba(nextCard, 0.92));
+      document.documentElement.style.removeProperty('--surface-bg');
       document.getElementById('bgColorPicker').value = nextBg;
+      document.getElementById('pageColorPicker').value = nextCard;
       document.getElementById('bgImageInput').value = '';
-      showToast('ব্যাকগ্রাউন্ড রিসেট হয়েছে!');
+      showToast('কালার ও ব্যাকগ্রাউন্ড রিসেট হয়েছে!');
     }
 
     function toggleTheme() {
       isDay = !isDay;
       document.body.classList.toggle('day', isDay);
       document.getElementById('themeBtn').textContent = isDay ? '🌙 Night' : '☀️ Day';
+      document.documentElement.style.removeProperty('--card-bg');
+      document.documentElement.style.removeProperty('--surface-bg');
       if (getComputedStyle(document.documentElement).getPropertyValue('--bg-image').trim() === 'none') {
         const nextBg = isDay ? '#e2e8f0' : '#090d16';
         document.documentElement.style.setProperty('--bg-color', nextBg);
@@ -1158,6 +1176,26 @@
       return got;
     }
 
+    // Checks if a move is connected/adjacent to an existing edge so non-serial moves keep turn
+    function isConnectedToExistingEdge(type, r, c) {
+      const hasH = (hr, hc) => Boolean(hEdges[`${hr},${hc}`]);
+      const hasV = (vr, vc) => Boolean(vEdges[`${vr},${vc}`]);
+
+      if (type === 'h') {
+        return (
+          hasH(r, c - 1) || hasH(r, c + 1) ||
+          hasV(r - 1, c) || hasV(r, c) ||
+          hasV(r - 1, c + 1) || hasV(r, c + 1)
+        );
+      } else {
+        return (
+          hasV(r - 1, c) || hasV(r + 1, c) ||
+          hasH(r, c - 1) || hasH(r, c) ||
+          hasH(r + 1, c - 1) || hasH(r + 1, c)
+        );
+      }
+    }
+
     function triggerLineStepAnim(type, r, c) {
       lastEdge = { type, r, c };
       edgeAnimStart = performance.now();
@@ -1177,7 +1215,7 @@
 
     function showCongratulationModal() {
       const sorted = [...players].sort((a, b) => b.score - a.score);
-      const winnerEl = document.getElementById('winnerNameDisplay');
+      const titleEl = document.getElementById('winnerAnnouncement');
       const summaryEl = document.getElementById('modalScoreSummary');
 
       if (!sorted.length) return;
@@ -1185,9 +1223,9 @@
       const tied = sorted.filter(p => p.score === topScore);
 
       if (tied.length > 1) {
-        winnerEl.textContent = tied.map(p => p.name).join(' ও ') + ' (যৌথ জয়ী)';
+        titleEl.textContent = `অভিনন্দন ${tied.map(p => p.name).join(' ও ')} যৌথভাবে জিতেছেন`;
       } else {
-        winnerEl.textContent = sorted[0].name;
+        titleEl.textContent = `অভিনন্দন ${sorted[0].name} জিতেছেন`;
       }
 
       summaryEl.innerHTML = sorted.map(p => `${p.name}: <strong>${p.score}</strong> বক্স`).join(' • ');
@@ -1199,6 +1237,8 @@
       const k = `${r},${c}`;
       if (type === 'h' && hEdges[k]) return;
       if (type === 'v' && vEdges[k]) return;
+
+      const connected = isConnectedToExistingEdge(type, r, c);
 
       if (type === 'h') hEdges[k] = playerId;
       else vEdges[k] = playerId;
@@ -1213,12 +1253,13 @@
         clearInterval(countdownInterval);
         updateClockUI();
         showCongratulationModal();
-      } else if (got === 0) {
+      } else if (got > 0 || !connected) {
+        // Keep turn when box captured OR when played non-serially (not connected to previous edges)
+        resetTurnClock();
+      } else {
         const idx = players.findIndex(p => p.id === playerId);
         const nextIdx = (idx + 1) % players.length;
         turn = players[nextIdx].id;
-        resetTurnClock();
-      } else {
         resetTurnClock();
       }
 
@@ -1284,34 +1325,48 @@
       return total;
     }
 
-    function evaluateHardMove(m) {
+    // Look ahead to see how many boxes opponent can capture immediately after AI's move
+    function opponentImmediateCaptureCount(hMap, vMap) {
+      const oppMoves = getAllAvailableMoves(hMap, vMap);
+      let maxOppGain = 0;
+      for (const om of oppMoves) {
+        const res = applyMoveToMaps(om, 1, hMap, vMap);
+        if (res.completed > maxOppGain) {
+          maxOppGain = res.completed;
+        }
+      }
+      return maxOppGain;
+    }
+
+    function evaluateUltraHardMove(m) {
       const { completed, th, tv } = applyMoveToMaps(m, 2, hEdges, vEdges);
 
-      // If move captures boxes, prioritize capturing most boxes
       if (completed > 0) {
-        return 1000 + completed * 100 - countBoxesWithSides(3, th, tv) * 15;
+        const oppRiskAfterCapture = opponentImmediateCaptureCount(th, tv);
+        return 2500 + completed * 220 - oppRiskAfterCapture * 140 - countBoxesWithSides(3, th, tv) * 25;
       }
 
-      // Count how many 3-sided boxes are created (opponent can claim these immediately)
-      const threesCreated = countBoxesWithSides(3, th, tv) - countBoxesWithSides(3, hEdges, vEdges);
-      // Count how many 2-sided boxes are created (potential future 3-sided trap)
+      const oppGain = opponentImmediateCaptureCount(th, tv);
+      const threesNow = countBoxesWithSides(3, th, tv);
+      const prevThrees = countBoxesWithSides(3, hEdges, vEdges);
       const twosCreated = countBoxesWithSides(2, th, tv) - countBoxesWithSides(2, hEdges, vEdges);
 
       let score = 0;
-      if (threesCreated > 0) {
-        // Heavy penalty for handing opponent boxes
-        score -= threesCreated * 250;
+      if (oppGain > 0) {
+        // Penalize giving opponent free boxes heavily
+        score -= oppGain * 650;
       } else {
-        // Safe move bonus
-        score += 120;
+        score += 450;
       }
 
-      // Slight penalty for turning a 1-sided box into a 2-sided box
-      score -= twosCreated * 14;
+      if (threesNow > prevThrees) {
+        score -= (threesNow - prevThrees) * 400;
+      }
 
-      // Slight preference toward central/strategic edges
+      score -= twosCreated * 28;
+
       const centerDist = Math.hypot(m.r - rows / 2, m.c - cols / 2);
-      score -= centerDist * 1.5;
+      score -= centerDist * 2.5;
 
       return score;
     }
@@ -1347,10 +1402,9 @@
           chosen = pool[Math.floor(Math.random() * pool.length)];
         }
       } else {
-        // Hard AI: evaluate every candidate move and pick highest strategic score
         let bestScore = -Infinity;
         for (const m of moves) {
-          const s = evaluateHardMove(m);
+          const s = evaluateUltraHardMove(m);
           if (s > bestScore) {
             bestScore = s;
             chosen = m;

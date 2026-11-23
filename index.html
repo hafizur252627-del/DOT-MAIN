@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ডট গেম (Dots & Boxes)</title>
+  <title>DOT GAME</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -553,8 +553,8 @@
 
       <div class="tabs">
         <button id="tCreate" type="button" class="tab-btn active" onclick="setTab('create')">➕ রুম তৈরি</button>
-        <button id="tJoin" type="button" class="tab-btn" onclick="setTab('join')">🔗 রুম যোগদান</button>
-        <button id="tMulti" type="button" class="tab-btn" onclick="setTab('multi')">👥 লোকাল প্লেয়ার</button>
+        <button id="tJoin" type="button" class="tab-btn" onclick="setTab('join')">🔗 রুমে যোগদান</button>
+        <button id="tMulti" type="button" class="tab-btn" onclick="setTab('multi')">👥 একই ডিভাইসে খেলুন</button>
         <button id="tAi" type="button" class="tab-btn" onclick="setTab('ai')">🤖 কম্পিউটার</button>
       </div>
 
@@ -617,14 +617,14 @@
       </div>
 
       <div id="pMulti" style="display:none;">
-        <label>একই ডিভাইসে কয়জন খেলবেন?</label>
+        <label>প্লেয়ার সিলেক্ট করুন</label>
         <div class="presets" style="grid-template-columns:repeat(3,1fr);">
           <button id="cnt2" type="button" class="preset-btn active" onclick="setPlayerCount(2)">২ জন</button>
           <button id="cnt3" type="button" class="preset-btn" onclick="setPlayerCount(3)">৩ জন</button>
           <button id="cnt4" type="button" class="preset-btn" onclick="setPlayerCount(4)">৪ জন</button>
         </div>
         <div id="multiNamesBox" style="margin-top:8px;"></div>
-        <button type="button" class="primary-btn" style="margin-top:6px;" onclick="startLocalMulti()">একসাথে খেলা শুরু করুন</button>
+        <button type="button" class="primary-btn" style="margin-top:6px;" onclick="startLocalMulti()">খেলা শুরু করুন</button>
       </div>
 
       <div id="pAi" style="display:none;">
@@ -632,7 +632,7 @@
         <div class="ai-row">
           <button id="lvlEasy" type="button" class="ai-lvl" onclick="setAi('easy')">সহজ</button>
           <button id="lvlMedium" type="button" class="ai-lvl" onclick="setAi('medium')">মাঝারি</button>
-          <button id="lvlHard" type="button" class="ai-lvl active" onclick="setAi('hard')">অনেক কঠিন</button>
+          <button id="lvlHard" type="button" class="ai-lvl active" onclick="setAi('hard')">কঠিন</button>
         </div>
         <button type="button" class="primary-btn ai-btn" onclick="startAi()">কম্পিউটারের সাথে খেলা শুরু করুন</button>
       </div>
@@ -647,7 +647,7 @@
           রুম কোড: <strong id="roomCodeText" style="color:#eab308;letter-spacing:2px;">-----</strong>
           <button type="button" class="btn" style="padding:4px 8px;font-size:11px;margin-left:6px;" onclick="copyCode()">কপি</button>
         </div>
-        <div id="roomStatusText" style="color:var(--text-muted);">২য় প্লেয়ারের অপেক্ষায়...</div>
+        <div id="roomStatusText" style="color:var(--text-muted);">অপেক্ষমান...</div>
       </div>
 
       <div id="scoresGrid" class="scores-grid"></div>
@@ -681,10 +681,10 @@
         <button type="button" class="primary-btn" style="flex:1;padding:10px;font-size:13px;" onclick="restartMatch()">আবার খেলুন</button>
       </div>
     </div>
-    <div class="modal-made-by">MADE BY LABIB</div>
+    <div class="modal-made-by">MADE BY LABIB AL AHSAN</div>
   </div>
 
-  <footer class="made-by">MADE BY LABIB</footer>
+  <footer class="made-by">MADE BY LABIB AL AHSAN</footer>
 
   <div id="toast" class="toast">কপি করা হয়েছে!</div>
 
@@ -794,7 +794,7 @@
       const reader = new FileReader();
       reader.onload = (e) => {
         document.documentElement.style.setProperty('--bg-image', `url("${e.target.result}")`);
-        showToast('ব্যাকগ্রাউন্ড ছবি যুক্ত হয়েছে!');
+        showToast('ব্যাকগ্রাউন্ডে ছবি যুক্ত হয়েছে!');
       };
       reader.readAsDataURL(file);
     }
@@ -1059,7 +1059,7 @@
       myRole = 1;
       roomId = null;
       const p1 = getName('আপনি');
-      const p2 = aiLevel === 'hard' ? 'কম্পিউটার (অনেক কঠিন)' : aiLevel === 'medium' ? 'কম্পিউটার (মাঝারি)' : 'কম্পিউটার (সহজ)';
+      const p2 = aiLevel === 'hard' ? 'কম্পিউটার(কঠিন)' : aiLevel === 'medium' ? 'কম্পিউটার (মাঝারি)' : 'কম্পিউটার (সহজ)';
       resetState(rows, cols, [
         { id: 1, name: p1 },
         { id: 2, name: p2 }

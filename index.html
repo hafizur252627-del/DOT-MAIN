@@ -84,6 +84,14 @@
       backdrop-filter: blur(8px);
     }
     .btn:hover { opacity: 0.92; }
+    .btn.paused-state {
+      border-color: #eab308;
+      background: rgba(234, 179, 8, 0.22);
+      color: #fde047;
+    }
+    body.day .btn.paused-state {
+      color: #854d0e;
+    }
 
     .card {
       background: var(--card-bg);
@@ -365,8 +373,9 @@
     .footer-btns {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       margin-top: 12px;
+      flex-wrap: wrap;
     }
 
     /* Congratulation Modal */
@@ -526,7 +535,7 @@
 
       <div id="pCreate">
         <button type="button" class="primary-btn" onclick="createRoom()">নতুন রুম তৈরি করুন</button>
-        <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px;">৫-সংখ্যার কোড তৈরি করে বন্ধুর সাথে শেয়ার করুন।</div>
+        <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px;">৫-সংখ্যার কোড তৈরি করে বন্ধুর সাথে শেয়ার করুন। ২য় প্লেয়ার এলে টাইমার শুরু হবে।</div>
       </div>
 
       <div id="pJoin" style="display:none;">
@@ -566,7 +575,7 @@
           রুম কোড: <strong id="roomCodeText" style="color:#eab308;letter-spacing:2px;">-----</strong>
           <button type="button" class="btn" style="padding:4px 8px;font-size:11px;margin-left:6px;" onclick="copyCode()">কপি</button>
         </div>
-        <div id="roomStatusText" style="color:var(--text-muted);">অপেক্ষা করা হচ্ছে...</div>
+        <div id="roomStatusText" style="color:var(--text-muted);">২য় প্লেয়ারের অপেক্ষায়...</div>
       </div>
 
       <div id="scoresGrid" class="scores-grid"></div>
@@ -582,7 +591,8 @@
       </div>
 
       <div class="footer-btns">
-        <button type="button" class="btn" onclick="backLobby()">← মেনু</button>
+        <button type="button" class="btn" onclick="backLobby()">← লবি</button>
+        <button id="pauseBtn" type="button" class="btn" onclick="togglePause()">⏸️ Pause</button>
         <button type="button" class="btn" onclick="restartMatch()">🔄 আবার খেলুন</button>
       </div>
     </div>
@@ -593,11 +603,10 @@
     <div class="congrats-card">
       <div style="font-size:42px;line-height:1;margin-bottom:6px;">🏆</div>
       <h2 class="congrats-heading">অভিনন্দন</h2>
-      <div id="winnerNameDisplay" class="winner-name-big">জয়ী প্লেয়ার জিতেছেন</div>
+      <div id="winnerNameDisplay" class="winner-name-big">জয়ী প্লেয়ার</div>
       <div id="modalScoreSummary" class="modal-score-summary"></div>
       <div class="modal-actions">
-        <button type="button" class="btn" style="flex:1;" onclick="backLobby()">মেনু
-        </button>
+        <button type="button" class="btn" style="flex:1;" onclick="backLobby()">লবি</button>
         <button type="button" class="primary-btn" style="flex:1;padding:10px;font-size:13px;" onclick="restartMatch()">আবার খেলুন</button>
       </div>
     </div>
@@ -644,7 +653,7 @@
     let aiLevel = 'hard';
     let mode = null; // 'ai' | 'online' | 'local'
     let localPlayerCount = 2;
-    let players = []; // [{ id: 1, name: '...', score: 0 }]
+    let players = [];
     let myRole = 1;
     let roomId = null;
     let unsub = null;
@@ -658,6 +667,8 @@
     let boxes = {};
     let turn = 1;
     let gameEnded = false;
+    let isPaused = false;
+    let waitingForSecondPlayer = false;
     let metrics = { pad: 34, cell: 56 };
 
     let customTurnSeconds = 15;
@@ -815,14 +826,40 @@
       countdownInterval = null;
     }
 
-    function resetTurnClock() {
+    function syncPauseButton() {
+      const btn = document.getElementById('pauseBtn');
+      if (!btn) return;
+      btn.textContent = isPaused ? '▶️ Resume' : '⏸️ Pause';
+      btn.classList.toggle('paused-state', isPaused);
+    }
+
+    function togglePause() {
+      if (gameEnded || waitingForSecondPlayer) return;
+      isPaused = !isPaused;
+      syncPauseButton();
+
+      if (isPaused) {
+        clearInterval(countdownInterval);
+        clearTimeout(aiTimer);
+        aiTimer = null;
+        showToast('খেলা Pause করা হয়েছে');
+      } else {
+        showToast('খেলা আবার শুরু হয়েছে');
+        startCountdownOnly();
+        if (mode === 'ai' && turn === 2) {
+          aiTimer = setTimeout(aiMove, 1000);
+        }
+      }
+      updateHeader();
+    }
+
+    function startCountdownOnly() {
       clearInterval(countdownInterval);
-      timeLeft = customTurnSeconds;
       updateClockUI();
-      if (gameEnded) return;
+      if (gameEnded || isPaused || waitingForSecondPlayer) return;
 
       countdownInterval = setInterval(() => {
-        if (gameEnded) {
+        if (gameEnded || isPaused || waitingForSecondPlayer) {
           clearInterval(countdownInterval);
           return;
         }
@@ -836,15 +873,25 @@
       }, 1000);
     }
 
+    function resetTurnClock() {
+      timeLeft = customTurnSeconds;
+      startCountdownOnly();
+    }
+
     function updateClockUI() {
       const el = document.getElementById('clockBadge');
       if (!el) return;
+      if (waitingForSecondPlayer) {
+        el.textContent = `⏱️ অপেক্ষমান`;
+        el.classList.remove('danger');
+        return;
+      }
       el.textContent = `⏱️ ${Math.max(0, timeLeft)}s`;
-      el.classList.toggle('danger', timeLeft <= 3 && !gameEnded);
+      el.classList.toggle('danger', timeLeft <= 3 && !gameEnded && !isPaused);
     }
 
     async function autoMoveOnTimeout() {
-      if (gameEnded) return;
+      if (gameEnded || isPaused || waitingForSecondPlayer) return;
       const moves = getAllAvailableMoves();
       if (!moves.length) return;
 
@@ -862,7 +909,7 @@
       }
     }
 
-    function resetState(r, c, playerList) {
+    function resetState(r, c, playerList, waitP2 = false) {
       stopTimers();
       rows = r;
       cols = c;
@@ -873,7 +920,11 @@
       turn = 1;
       lastEdge = null;
       gameEnded = false;
+      isPaused = false;
+      waitingForSecondPlayer = waitP2;
+      syncPauseButton();
       customTurnSeconds = getCustomTimerValue();
+      timeLeft = customTurnSeconds;
       document.getElementById('congratsModal').classList.remove('show');
     }
 
@@ -883,7 +934,12 @@
       document.getElementById('roomBar').style.display = mode === 'online' ? 'flex' : 'none';
       updateHeader();
       drawBoard();
-      resetTurnClock();
+      if (!waitingForSecondPlayer) {
+        resetTurnClock();
+      } else {
+        clearInterval(countdownInterval);
+        updateClockUI();
+      }
     }
 
     function backLobby() {
@@ -892,6 +948,9 @@
       if (unsub) { unsub(); unsub = null; }
       mode = null;
       roomId = null;
+      isPaused = false;
+      waitingForSecondPlayer = false;
+      syncPauseButton();
       document.getElementById('congratsModal').classList.remove('show');
       document.getElementById('gameView').style.display = 'none';
       document.getElementById('lobbyView').style.display = 'block';
@@ -903,11 +962,11 @@
       myRole = 1;
       roomId = null;
       const p1 = getName('আপনি');
-      const p2 = aiLevel === 'hard' ? 'কম্পিউটার (কঠিন)' : aiLevel === 'medium' ? 'কম্পিউটার (মাঝারি)' : 'কম্পিউটার (সহজ)';
+      const p2 = aiLevel === 'hard' ? 'কম্পিউটার (অনেক কঠিন)' : aiLevel === 'medium' ? 'কম্পিউটার (মাঝারি)' : 'কম্পিউটার (সহজ)';
       resetState(rows, cols, [
         { id: 1, name: p1 },
         { id: 2, name: p2 }
-      ]);
+      ], false);
       openGameView();
     }
 
@@ -922,7 +981,7 @@
         const nm = inp && inp.value.trim() ? inp.value.trim() : `প্লেয়ার ${i}`;
         list.push({ id: i, name: nm });
       }
-      resetState(rows, cols, list);
+      resetState(rows, cols, list, false);
       openGameView();
     }
 
@@ -940,7 +999,7 @@
       resetState(rows, cols, [
         { id: 1, name: p1 },
         { id: 2, name: 'প্লেয়ার ২' }
-      ]);
+      ], true);
 
       try {
         const ref = window.fb.doc(window.fb.db, 'dot_rooms', code);
@@ -982,6 +1041,10 @@
         myRole = 2;
         roomId = code;
         customTurnSeconds = d.turnSeconds || getCustomTimerValue();
+        resetState(d.rows || 4, d.cols || 4, [
+          { id: 1, name: d.p1Name || 'প্লেয়ার ১' },
+          { id: 2, name: joinName }
+        ], false);
         document.getElementById('roomCodeText').textContent = code;
         listenRoom(code);
         openGameView();
@@ -997,6 +1060,8 @@
         if (!snap.exists()) return;
         const d = snap.data();
         const prevTurn = turn;
+        const wasWaiting = waitingForSecondPlayer;
+
         rows = d.rows || 4;
         cols = d.cols || 4;
         hEdges = d.hEdges || {};
@@ -1010,28 +1075,46 @@
         ];
         if (d.turnSeconds) customTurnSeconds = d.turnSeconds;
         gameEnded = d.status === 'finished';
-        document.getElementById('roomStatusText').textContent = d.status === 'waiting' ? 'অপেক্ষা করা হচ্ছে...' : 'যুক্ত হয়েছে';
+        waitingForSecondPlayer = d.status === 'waiting' || !d.p2Name;
+
+        document.getElementById('roomStatusText').textContent = waitingForSecondPlayer
+          ? '২য় প্লেয়ারের অপেক্ষায়...'
+          : '২য় প্লেয়ার যুক্ত হয়েছে';
+
         updateHeader();
         drawBoard();
-        if (gameEnded) showCongratulationModal();
-        else if (prevTurn !== turn) resetTurnClock();
+
+        if (gameEnded) {
+          clearInterval(countdownInterval);
+          showCongratulationModal();
+        } else if (waitingForSecondPlayer) {
+          clearInterval(countdownInterval);
+          updateClockUI();
+        } else if (wasWaiting && !waitingForSecondPlayer) {
+          showToast('২য় প্লেয়ার যুক্ত হয়েছে! টাইমার শুরু হলো।');
+          resetTurnClock();
+        } else if (prevTurn !== turn && !isPaused) {
+          resetTurnClock();
+        }
       });
     }
 
     function restartMatch() {
       const currentNames = players.map(p => ({ id: p.id, name: p.name }));
-      resetState(rows, cols, currentNames);
+      const stillWaiting = mode === 'online' && waitingForSecondPlayer;
+      resetState(rows, cols, currentNames, stillWaiting);
       if (mode === 'online' && roomId && window.fb) {
         const ref = window.fb.doc(window.fb.db, 'dot_rooms', roomId);
         window.fb.updateDoc(ref, {
           hEdges, vEdges, boxes, turn,
           scores: { 1: 0, 2: 0 },
-          status: 'playing'
+          status: stillWaiting ? 'waiting' : 'playing'
         }).catch(() => {});
       }
       updateHeader();
       drawBoard();
-      resetTurnClock();
+      if (!stillWaiting) resetTurnClock();
+      else updateClockUI();
     }
 
     function copyCode() {
@@ -1112,7 +1195,7 @@
     }
 
     async function doMove(type, r, c, playerId) {
-      if (gameEnded) return;
+      if (gameEnded || isPaused || waitingForSecondPlayer) return;
       const k = `${r},${c}`;
       if (type === 'h' && hEdges[k]) return;
       if (type === 'v' && vEdges[k]) return;
@@ -1154,31 +1237,31 @@
       updateHeader();
       drawBoard();
 
-      if (mode === 'ai' && !gameEnded && turn === 2) {
+      if (mode === 'ai' && !gameEnded && !isPaused && turn === 2) {
         aiTimer = setTimeout(aiMove, 1000);
       }
     }
 
-    function getAllAvailableMoves() {
+    function getAllAvailableMoves(hMap = hEdges, vMap = vEdges) {
       const moves = [];
       for (let r = 0; r <= rows; r++) {
         for (let c = 0; c < cols; c++) {
-          if (!hEdges[`${r},${c}`]) moves.push({ type: 'h', r, c });
+          if (!hMap[`${r},${c}`]) moves.push({ type: 'h', r, c });
         }
       }
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c <= cols; c++) {
-          if (!vEdges[`${r},${c}`]) moves.push({ type: 'v', r, c });
+          if (!vMap[`${r},${c}`]) moves.push({ type: 'v', r, c });
         }
       }
       return moves;
     }
 
-    function countBoxesCompletedByMove(m, hMap, vMap) {
+    function applyMoveToMaps(m, playerId, hMap, vMap) {
       const th = { ...hMap };
       const tv = { ...vMap };
-      if (m.type === 'h') th[`${m.r},${m.c}`] = 2;
-      else tv[`${m.r},${m.c}`] = 2;
+      if (m.type === 'h') th[`${m.r},${m.c}`] = playerId;
+      else tv[`${m.r},${m.c}`] = playerId;
 
       let completed = 0;
       if (m.type === 'h') {
@@ -1191,18 +1274,50 @@
       return { completed, th, tv };
     }
 
-    function countThreeSidedBoxes(hMap, vMap) {
-      let threes = 0;
+    function countBoxesWithSides(sideTarget, hMap, vMap) {
+      let total = 0;
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          if (boxSides(r, c, hMap, vMap) === 3) threes++;
+          if (boxSides(r, c, hMap, vMap) === sideTarget) total++;
         }
       }
-      return threes;
+      return total;
+    }
+
+    function evaluateHardMove(m) {
+      const { completed, th, tv } = applyMoveToMaps(m, 2, hEdges, vEdges);
+
+      // If move captures boxes, prioritize capturing most boxes
+      if (completed > 0) {
+        return 1000 + completed * 100 - countBoxesWithSides(3, th, tv) * 15;
+      }
+
+      // Count how many 3-sided boxes are created (opponent can claim these immediately)
+      const threesCreated = countBoxesWithSides(3, th, tv) - countBoxesWithSides(3, hEdges, vEdges);
+      // Count how many 2-sided boxes are created (potential future 3-sided trap)
+      const twosCreated = countBoxesWithSides(2, th, tv) - countBoxesWithSides(2, hEdges, vEdges);
+
+      let score = 0;
+      if (threesCreated > 0) {
+        // Heavy penalty for handing opponent boxes
+        score -= threesCreated * 250;
+      } else {
+        // Safe move bonus
+        score += 120;
+      }
+
+      // Slight penalty for turning a 1-sided box into a 2-sided box
+      score -= twosCreated * 14;
+
+      // Slight preference toward central/strategic edges
+      const centerDist = Math.hypot(m.r - rows / 2, m.c - cols / 2);
+      score -= centerDist * 1.5;
+
+      return score;
     }
 
     function aiMove() {
-      if (mode !== 'ai' || gameEnded || turn !== 2) return;
+      if (mode !== 'ai' || gameEnded || isPaused || waitingForSecondPlayer || turn !== 2) return;
       const moves = getAllAvailableMoves();
       if (!moves.length) return;
 
@@ -1210,11 +1325,11 @@
 
       if (aiLevel === 'easy') {
         chosen = moves[Math.floor(Math.random() * moves.length)];
-      } else {
+      } else if (aiLevel === 'medium') {
         let bestCapture = null;
         let maxCaps = 0;
         for (const m of moves) {
-          const { completed } = countBoxesCompletedByMove(m, hEdges, vEdges);
+          const { completed } = applyMoveToMaps(m, 2, hEdges, vEdges);
           if (completed > maxCaps) {
             maxCaps = completed;
             bestCapture = m;
@@ -1223,36 +1338,22 @@
         if (bestCapture) {
           chosen = bestCapture;
         } else {
-          const currentThrees = countThreeSidedBoxes(hEdges, vEdges);
-          const safeMoves = [];
-          for (const m of moves) {
-            const { th, tv } = countBoxesCompletedByMove(m, hEdges, vEdges);
-            const nextThrees = countThreeSidedBoxes(th, tv);
-            if (nextThrees <= currentThrees) {
-              safeMoves.push(m);
-            }
-          }
-
-          if (safeMoves.length > 0) {
-            if (aiLevel === 'hard') {
-              const centerR = rows / 2;
-              const centerC = cols / 2;
-              safeMoves.sort((a, b) => {
-                const da = Math.hypot(a.r - centerR, a.c - centerC);
-                const db = Math.hypot(b.r - centerR, b.c - centerC);
-                return da - db;
-              });
-              chosen = safeMoves[0];
-            } else {
-              chosen = safeMoves[Math.floor(Math.random() * safeMoves.length)];
-            }
-          } else {
-            moves.sort((a, b) => {
-              const sa = countBoxesCompletedByMove(a, hEdges, vEdges);
-              const sb = countBoxesCompletedByMove(b, hEdges, vEdges);
-              return countThreeSidedBoxes(sa.th, sa.tv) - countThreeSidedBoxes(sb.th, sb.tv);
-            });
-            chosen = moves[0];
+          const prevThrees = countBoxesWithSides(3, hEdges, vEdges);
+          const safe = moves.filter(m => {
+            const { th, tv } = applyMoveToMaps(m, 2, hEdges, vEdges);
+            return countBoxesWithSides(3, th, tv) <= prevThrees;
+          });
+          const pool = safe.length ? safe : moves;
+          chosen = pool[Math.floor(Math.random() * pool.length)];
+        }
+      } else {
+        // Hard AI: evaluate every candidate move and pick highest strategic score
+        let bestScore = -Infinity;
+        for (const m of moves) {
+          const s = evaluateHardMove(m);
+          if (s > bestScore) {
+            bestScore = s;
+            chosen = m;
           }
         }
       }
@@ -1353,7 +1454,7 @@
     }
 
     canvas.addEventListener('click', (e) => {
-      if (gameEnded) return;
+      if (gameEnded || isPaused || waitingForSecondPlayer) return;
       if (mode === 'ai' && turn !== 1) return;
       if (mode === 'online' && turn !== myRole) return;
 
@@ -1393,7 +1494,7 @@
       const grid = document.getElementById('scoresGrid');
       grid.innerHTML = players.map(p => {
         const pal = getPlayerPalette(p.id);
-        const active = !gameEnded && turn === p.id;
+        const active = !gameEnded && !waitingForSecondPlayer && turn === p.id;
         return `
           <div class="card p-card" style="border-color:${active ? pal.stroke : 'transparent'};">
             <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
@@ -1407,6 +1508,8 @@
       const badge = document.getElementById('turnBadge');
       const activePlayer = getPlayerById(turn);
       if (gameEnded) badge.textContent = 'খেলা শেষ';
+      else if (waitingForSecondPlayer) badge.textContent = '২য় প্লেয়ারের অপেক্ষায়...';
+      else if (isPaused) badge.textContent = 'খেলা Pause করা আছে';
       else if (mode === 'local') badge.textContent = `${activePlayer ? activePlayer.name : 'প্লেয়ার'}-এর চাল`;
       else if ((mode === 'ai' && turn === 1) || (mode === 'online' && turn === myRole)) badge.textContent = 'আপনার চাল';
       else badge.textContent = mode === 'ai' ? 'কম্পিউটার চাল দিচ্ছে...' : 'প্রতিপক্ষের চাল';

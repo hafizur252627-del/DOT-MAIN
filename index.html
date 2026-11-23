@@ -396,7 +396,7 @@
     }
     .congrats-card {
       width: 100%;
-      max-width: 400px;
+      max-width: 410px;
       background: var(--card-bg);
       border: 2px solid #a855f7;
       border-radius: 20px;
@@ -409,7 +409,7 @@
       font-weight: 900;
       color: #eab308;
       margin: 0 0 12px;
-      line-height: 1.4;
+      line-height: 1.45;
     }
     .modal-score-summary {
       font-size: 13px;
@@ -473,8 +473,8 @@
       </div>
     </div>
 
-    <!-- LOBBY -->
-    <div id="lobbyView" class="card">
+    <!-- MAIN MENU -->
+    <div id="menuView" class="card">
       <label for="nameInput">আপনার নাম</label>
       <input id="nameInput" type="text" maxlength="16" placeholder="যেমন: লাবিব" />
 
@@ -487,7 +487,7 @@
 
       <!-- Custom Background & Option Page Color -->
       <div class="panel-box">
-        <div style="font-size:12px;font-weight:800;margin-bottom:6px;">পেইজ ও অপশন কালার / ব্যাকগ্রাউন্ড</div>
+        <div style="font-size:12px;font-weight:800;margin-bottom:6px;">মেনু ও অপশন কালার / ব্যাকগ্রাউন্ড</div>
         <div class="bg-controls">
           <div class="color-pick-wrap">
             <span>BG:</span>
@@ -590,7 +590,7 @@
       </div>
 
       <div class="footer-btns">
-        <button type="button" class="btn" onclick="backLobby()">← লবি</button>
+        <button type="button" class="btn" onclick="backMenu()">← মেনু</button>
         <button id="pauseBtn" type="button" class="btn" onclick="togglePause()">⏸️ Pause</button>
         <button type="button" class="btn" onclick="restartMatch()">🔄 আবার খেলুন</button>
       </div>
@@ -604,7 +604,7 @@
       <h2 id="winnerAnnouncement" class="congrats-title-line">অভিনন্দন প্লেয়ার জিতেছেন</h2>
       <div id="modalScoreSummary" class="modal-score-summary"></div>
       <div class="modal-actions">
-        <button type="button" class="btn" style="flex:1;" onclick="backLobby()">লবি</button>
+        <button type="button" class="btn" style="flex:1;" onclick="backMenu()">মেনু</button>
         <button type="button" class="primary-btn" style="flex:1;padding:10px;font-size:13px;" onclick="restartMatch()">আবার খেলুন</button>
       </div>
     </div>
@@ -947,7 +947,7 @@
     }
 
     function openGameView() {
-      document.getElementById('lobbyView').style.display = 'none';
+      document.getElementById('menuView').style.display = 'none';
       document.getElementById('gameView').style.display = 'block';
       document.getElementById('roomBar').style.display = mode === 'online' ? 'flex' : 'none';
       updateHeader();
@@ -960,7 +960,7 @@
       }
     }
 
-    function backLobby() {
+    function backMenu() {
       stopTimers();
       if (animFrameId) cancelAnimationFrame(animFrameId);
       if (unsub) { unsub(); unsub = null; }
@@ -971,7 +971,7 @@
       syncPauseButton();
       document.getElementById('congratsModal').classList.remove('show');
       document.getElementById('gameView').style.display = 'none';
-      document.getElementById('lobbyView').style.display = 'block';
+      document.getElementById('menuView').style.display = 'block';
     }
 
     function startAi() {
@@ -1353,7 +1353,6 @@
 
       let score = 0;
       if (oppGain > 0) {
-        // Penalize giving opponent free boxes heavily
         score -= oppGain * 650;
       } else {
         score += 450;
